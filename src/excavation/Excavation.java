@@ -38,5 +38,18 @@ public class Excavation {
 
     La coordenada superior se duplicara si se terminan las letras, es decir, será por ejemplo:AA.
     La cuadrícula debe quedar encuadrada, con espacios necesarios y centrada con las letras superiores.
+    
+    metodo recursivo para generar letras
+
+    metodo excavar(posicion) intercambia la posicion con el valor de la lista de tesoros
+    Al excavar el usuario tiene un numero de intentos determinado del 25% hasta un 75% del tamaño de la rejilla.
+    La formula:(25%+extra arqueologo)*factor de aumento de habilidades multiplicado entre sí.
+    En cada turno se mostrara las acciones restantes, el estado de la rejilla y se pedirá la posición/es a excavar al usuario indicando numeros y letras.
+    Termina cuando no haya mas tesoros o acciones y lo notificará con mensaje.
+
+    finalizar() mostrara el estado de la rejilla y una lista con lo descubierto para ser registrado en Stats y enviados al museo.
+    se llama al metodo que recoja los datos y mostrara los tesoros encontrados mostrando:  nombre, descripción, código, tipo y rareza(de forma similar al catálogo).
+    Despues mostrara el mensaje de Zeraf(el de la libreria) al mandar tesoros; los puntos y la experiencia ganadas.
+    Dependiendo del tamaño de la excavacion el arqueologo ganara mas experiencia extra 2, 5 y 10.
     */
 }
