@@ -1,9 +1,8 @@
 package commons.repositories;
 
+import helpers.CodeHelper;
 import java.util.ArrayList;
 import java.util.List;
-
-import helpers.CodeHelper;
 import regions.Region;
 import treasures.ETreasureRarity;
 import treasures.ETreasureType;
@@ -12,7 +11,7 @@ import treasures.Treasure;
 /**
  * Puerta de acceso a todos los tesoros del sistema.
  * No guarda tesoros propios: los busca en las regiones registradas en
- * {@link RegionRepository}, que son las que los almacenan.
+ *  RegionRepository, que son las que los almacenan.
  */
 public final class TreasureRepository {
 
