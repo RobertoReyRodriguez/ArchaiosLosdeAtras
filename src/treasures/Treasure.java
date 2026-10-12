@@ -158,25 +158,35 @@ public class Treasure {
         this.points = points; 
     }
 
-/**
+    /**
      * Genera el código completo del tesoro seleccionando una parte
      * de forma aleatoria entre 1 y el total de partes disponibles.
      *
      * @return El codigo completo formateado (RRR_TTT_NNN_PPPP).
      */
-public String generateRandomPartCode() {
-    int randomPart = RandomHelper.randomInt(1, this.parts);
-    return getFullPartCode(randomPart);
-}
+    public String generateRandomPartCode() {
+        int randomPart = RandomHelper.randomInt(1, this.parts);
+        return getFullPartCode(randomPart);
+    }
 
-/**
+    /**
      * Devuelve el código completo añadiendo el numero de parte especificado
      * formateado a 4 digitos con ceros a la izquierda.
      *
      * @param partNumber Numero de la parte a formatear.
      * @return El codigo formateado (ejemplo: GRC_MON_001_0005).
      */
-public String getFullPartCode(int partNumber) {
-    return String.format("%s_%04d", this.code, partNumber);
+    public String getFullPartCode(int partNumber) {
+        return String.format("%s_%04d", this.code, partNumber);
     }
-}
+    
+    /**
+    * Devuelve una representacion textual del tesoro con su nombre y codigo base.
+    * Ejemplo: "Calco griego (GRC_MON_001)"
+    * 
+     * @return El nombre y codigo del tesoro en formato legible.
+    */
+    public String toString() {
+        return this.name + " (" + this.code + ")";
+    }
+    }
