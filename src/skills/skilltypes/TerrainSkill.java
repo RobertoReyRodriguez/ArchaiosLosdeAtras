@@ -1,7 +1,9 @@
-package skills;
+package skills.skilltypes;
 import java.util.List;
 
 import excavation.Terrain;
+import skills.ESkillType;
+import skills.Skill;
 /*Clase para la habilidad que modifica los terrenos del arquelologo. Provisional aun hay que modificarla */
 public class TerrainSkill extends Skill {
     private final List<Terrain> terrains;

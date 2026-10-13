@@ -1,4 +1,8 @@
-package skills;
+package skills.skilltypes;
+
+import skills.ESkillType;
+import skills.Skill;
+
 /*Clase para la habilidad que revela posiciones de tesoros. Provisional aun hay que modificarla */
 public class RevealSkill extends Skill {
     public static final double MAX_RATIO = 0.25;
