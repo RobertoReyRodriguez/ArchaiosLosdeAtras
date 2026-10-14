@@ -20,13 +20,12 @@ public final class Terrain {
 	/**
 	 * Crea un terreno.
 	 *
-	 * @param size  El tamaño.
-	 * @param shape La forma de la rejilla.
-	 * @throws NullPointerException Si alguno de los parámetros es null.
+	 * @param size  El tamaño del terreno(si fuese null se tiene como default tamano pequeno).
+	 * @param shape La forma de la rejilla(si fuese null se tiene como default forma cuadrada).
 	 */
 	public Terrain(ETerrainSize size, ETerrainShape shape) {
-		this.size = Objects.requireNonNull(size);
-		this.shape = Objects.requireNonNull(shape);
+		this.size = (size != null) ? size : ETerrainSize.SMALL;
+		this.shape = (shape != null) ? shape : ETerrainShape.SQUARE;
 	}
 
 	/**
