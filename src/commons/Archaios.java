@@ -17,6 +17,7 @@ import regions.Atlas;
 import regions.Greece;
 import regions.Iberia;
 import regions.Rome;
+import skills.BaseSkills;
 import stats.Stats;
 
 /**
@@ -24,8 +25,8 @@ import stats.Stats;
  */
 public class Archaios {
 
-    /** El código del grupo . */
-    //public static final String GROUP_CODE = "PREGUNTAR A ADRIAN";
+    /** El código del grupo otorgado por el profesor, común para toda la clase. */
+    public static final String GROUP_CODE = "CAMBIAR_POR_EL_CODIGO_DEL_PROFESOR";
 
     /** El código identificativo y único del usuario. */
     private String uid;
@@ -50,7 +51,6 @@ public class Archaios {
 
     /**
      * Registra los elementos del sistema en sus repositorios antes de arrancar.
-     * Las habilidades se registrarán aquí cuando existan.
      */
     private static void preInit() {
         ErrorHelper.installGlobalHandler();
@@ -58,6 +58,8 @@ public class Archaios {
         RegionRepository.register(new Greece());
         RegionRepository.register(new Iberia());
         RegionRepository.register(new Rome());
+
+        BaseSkills.register();
     }
 
     /**

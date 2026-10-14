@@ -1,133 +1,28 @@
 package excavation;
 
-import java.util.Objects;
+public class Terrain {
+    int[][] tamano;
+    /*
+    metodos para generar terrenos con las siguientes caracteristicas.
+    Tres tipos de terrenos.
+    Pequeños(15 a 25 casillas, minimo 1 tesoro comun y puede 1 infrecuente)
+    Fila: 5x3
+    Horizontal: 10x2
+    Columna: 3x5
+    Vertical: 2x10
+    Cuadrado: 5x5
 
-import treasures.ETreasureRarity;
+    Medianos(90 a 100 casillas, minimo 3 tesoro comun, 1 infrecuente y puede 1 raro)
+    Fila: 20x5
+    Horizontal: 30x3
+    Columna: 5x20
+    Vertical: 3x30
+    Cuadrado: 10x10
 
-/**
- * Terreno que puede excavar un arqueólogo. Se define por un tamaño
- * ETerrainSize y una forma de rejilla ETerrainShape de
- * esa combinación salen las dimensiones y los límites de tesoros.
- */
-public final class Terrain {
-
-	/** El tamaño del terreno. */
-	private final ETerrainSize size;
-
-	/** La forma de la rejilla. */
-	private final ETerrainShape shape;
-
-	/**
-	 * Crea un terreno.
-	 *
-	 * @param size  El tamaño del terreno(si fuese null se tiene como default tamano pequeno).
-	 * @param shape La forma de la rejilla(si fuese null se tiene como default forma cuadrada).
-	 */
-	public Terrain(ETerrainSize size, ETerrainShape shape) {
-		this.size = (size != null) ? size : ETerrainSize.SMALL;
-		this.shape = (shape != null) ? shape : ETerrainShape.SQUARE;
-	}
-
-	/**
-	 * Crea un terreno cuadrado del tamaño indicado, el único tipo que desbloquean
-	 * los arqueólogos al subir de nivel.
-	 *
-	 * @param size El tamaño.
-	 * @return El terreno cuadrado.
-	 */
-	public static Terrain square(ETerrainSize size) {
-		return new Terrain(size, ETerrainShape.SQUARE);
-	}
-
-	/**
-	 * Obtiene el tamaño.
-	 *
-	 * @return El tamaño del terreno.
-	 */
-	public ETerrainSize getSize() {
-		return size;
-	}
-
-	/**
-	 * Obtiene la forma de la rejilla.
-	 *
-	 * @return La forma del terreno.
-	 */
-	public ETerrainShape getShape() {
-		return shape;
-	}
-
-	/**
-	 * Obtiene el ancho de la rejilla.
-	 *
-	 * @return El número de columnas.
-	 */
-	public int getWidth() {
-		return size.getWidth(shape);
-	}
-
-	/**
-	 * Obtiene el alto de la rejilla.
-	 *
-	 * @return El número de filas.
-	 */
-	public int getHeight() {
-		return size.getHeight(shape);
-	}
-
-	/**
-	 * Obtiene el número total de casillas.
-	 *
-	 * @return Ancho por alto.
-	 */
-	public int getCells() {
-		return getWidth() * getHeight();
-	}
-
-	/**
-	 * Obtiene el mínimo de tesoros de una rareza que debe contener.
-	 *
-	 * @param rarity La rareza de los tesoros.
-	 * @return El mínimo de tesoros.
-	 */
-	public int getMinTreasures(ETreasureRarity rarity) {
-		return size.getMinTreasures(rarity);
-	}
-
-	/**
-	 * Obtiene el máximo de tesoros de una rareza que puede contener.
-	 *
-	 * @param rarity La rareza de los tesoros.
-	 * @return El máximo de tesoros.
-	 */
-	public int getMaxTreasures(ETreasureRarity rarity) {
-		return size.getMaxTreasures(rarity);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Terrain)) {
-			return false;
-		}
-		Terrain other = (Terrain) obj;
-		return size == other.size && shape == other.shape;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(size, shape);
-	}
-
-	/**
-	 * Devuelve una descripción como "pequeño cuadrada (5x5)".
-	 *
-	 * @return El texto del terreno.
-	 */
-	@Override
-	public String toString() {
-		return size + " " + shape + " (" + getWidth() + "x" + getHeight() + ")";
-	}
+    Grandes(200 a 225 casillas, minimo 5 tesoro comun, 3 infrecuente y 1 raro)
+    Fila: 20x10
+    Horizontal: 40x5
+    Columna: 10x20
+    Vertical: 5x40
+    Cuadrado: 15x15 */
 }
