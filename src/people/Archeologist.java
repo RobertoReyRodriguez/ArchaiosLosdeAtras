@@ -1,8 +1,8 @@
 package people;
 
-import java.util.List;
-
 import excavation.Terrain;
+import java.util.ArrayList;
+import java.util.List;
 import skills.Skill;
 
 import java.util.ArrayList;
