@@ -1,5 +1,7 @@
 package treasures;
+import java.util.Objects;
 import helpers.RandomHelper;
+import helpers.UtilsHelper;
 
 /**
  * Clase que representa un tesoro dentro del juego.
@@ -7,7 +9,7 @@ import helpers.RandomHelper;
  * 
  * @author David B.R
  */
-public class Treasure {
+public class Treasure implements Comparable<Treasure> {
 
     private String code;
     private String name;
@@ -44,6 +46,37 @@ public class Treasure {
         this.type = type;
         this.parts = parts < 1 ? 1 : parts;
         this.points = points;
+    }
+
+    /**
+     * Comprueba si el tipo de tesoro es de género femenino.
+     * @return true si es femenino, false si es masculino.
+     */
+    public boolean isFeminine() {
+        if (this.type == null) {
+            return false;
+        }
+        return this.type == ETreasureType.COIN
+                || this.type == ETreasureType.TILE
+                || this.type == ETreasureType.BEAD
+                || this.type == ETreasureType.JEWELRY
+                || this.type == ETreasureType.CERAMIC
+                || this.type == ETreasureType.STELE;
+    }
+
+    /**
+     * Devuelve la rareza formateada según el género del tipo de tesoro.
+     * 
+     * @return Rareza formateada ("rara" o "raro", etc.).
+     */
+    public String getFormattedRarity() {
+        if (this.rarity == null) {
+            return "";
+        }
+        if (this.rarity == ETreasureRarity.RARE) {
+            return isFeminine() ? "rara" : "raro";
+        }
+        return this.rarity.toString();
     }
 
     /**
@@ -179,6 +212,35 @@ public class Treasure {
     public String getFullPartCode(int partNumber) {
         return String.format("%s_%04d", this.code, partNumber);
     }
+
+    public String getCatalogDetails() {
+        String typeStr = (this.type != null) ? UtilsHelper.ucfirst(this.type.toString()) : "";
+        
+        String result = "-------------------- " + this.name + " --------------------\n"
+                + this.description + "\n"
+                + "Código: " + this.code + "\n"
+                + typeStr + " " + getFormattedRarity();
+
+        if (this.parts > 1) {
+            String wordDivided = isFeminine() ? "dividida" : "dividido";
+            result += " " + wordDivided + " en " + this.parts + " partes";
+        }
+
+        return result;
+    }
+
+     /**
+     * Devuelve los datos formateados del tesoro encontrado tras una excavacion.
+     * @param fullPartCode El codigo completo que incluye la parte encontrada.
+     * @return Texto formateado para mostrar en la excavacion.
+     */
+  public String getFoundDetails(String fullPartCode) {
+        String result = this.name + "\n";
+        result += this.description + "\n";
+        result += "Código: " + fullPartCode + "\n";
+        result += this.type + " " + getFormattedRarity();
+        return result;
+    }
     
     /**
     * Devuelve una representacion textual del tesoro con su nombre y codigo base.
@@ -189,4 +251,24 @@ public class Treasure {
     public String toString() {
         return this.name + " (" + this.code + ")";
     }
+
+    /**
+     * Compara este tesoro con otro basándose en su código.
+     * Permite ordenar las listas de tesoros alfabéticamente por código.
+     * 
+     * @param other El otro tesoro a comparar.
+     * @return Un entero negativo, cero o positivo si este código es menor,
+     *         igual o mayor que el del otro tesoro.
+     */
+
+    @Override
+    public int compareTo(Treasure other) {
+        if (other == null || other.getCode() == null) {
+            return 1;
+        }
+        if (this.code == null) {
+            return -1;
+        }
+        return this.code.compareTo(other.getCode());
     }
+}
