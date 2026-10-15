@@ -1,47 +1,60 @@
 package excavation;
 
-import java.util.Objects;
-
-import treasures.ETreasureRarity;
+import helpers.UtilsHelper;
+import java.util.ArrayList;
+import java.util.List;
+import people.Archeologist;
 
 /**
- * Terreno que puede excavar un arqueólogo. Se define por un tamaño
- * ETerrainSize y una forma de rejilla ETerrainShape de
- * esa combinación salen las dimensiones y los límites de tesoros.
+ * Un terreno de excavación: un tamaño y una forma, que juntos dan las medidas de la rejilla.
  */
-public final class Terrain {
+public class Terrain {
+
+	/**
+	 * Las medidas de cada terreno como columnas, filas. 
+	 * Primer índice: el tamaño, en el ordende  ETerrainSize.
+	 *  Segundo índice: la forma, en el orden de ETerrainShape
+	 * 
+	 */
+	private static final int[][][] DIMENSIONS = {
+			{ { 5, 3 }, { 10, 2 }, { 3, 5 }, { 2, 10 }, { 5, 5 } },
+			{ { 20, 5 }, { 30, 3 }, { 5, 20 }, { 3, 30 }, { 10, 10 } },
+			{ { 20, 10 }, { 40, 5 }, { 10, 20 }, { 5, 40 }, { 15, 15 } }
+	};
 
 	/** El tamaño del terreno. */
 	private final ETerrainSize size;
-
-	/** La forma de la rejilla. */
+	/** La forma del terreno. */
 	private final ETerrainShape shape;
 
 	/**
-	 * Crea un terreno.
-	 *
-	 * @param size  El tamaño del terreno(si fuese null se tiene como default tamano pequeno).
-	 * @param shape La forma de la rejilla(si fuese null se tiene como default forma cuadrada).
+	 * @param size El tamaño del terreno.
+	 * @param shape La forma del terreno.
 	 */
 	public Terrain(ETerrainSize size, ETerrainShape shape) {
-		this.size = (size != null) ? size : ETerrainSize.SMALL;
-		this.shape = (shape != null) ? shape : ETerrainShape.SQUARE;
+		this.size = size;
+		this.shape = shape;
 	}
 
 	/**
-	 * Crea un terreno cuadrado del tamaño indicado, el único tipo que desbloquean
-	 * los arqueólogos al subir de nivel.
-	 *
-	 * @param size El tamaño.
-	 * @return El terreno cuadrado.
+	 * Devuelve los terrenos que puede excavar un arqueólogo: los tamaños que permite su nivel
+	 * combinados con las formas que tiene.
+	 * @param archeologist El arqueólogo.
+	 * @return Los terrenos, ordenados por tamaño y forma.
 	 */
-	public static Terrain square(ETerrainSize size) {
-		return new Terrain(size, ETerrainShape.SQUARE);
+	public static List<Terrain> getAvailable(Archeologist archeologist) {
+		List<Terrain> terrains = new ArrayList<>();
+		for (ETerrainSize size : archeologist.getTerrainSizes()) {
+			for (ETerrainShape shape : ETerrainShape.values()) {
+				if (archeologist.getTerrains().contains(shape)) {
+					terrains.add(new Terrain(size, shape));
+				}
+			}
+		}
+		return terrains;
 	}
 
 	/**
-	 * Obtiene el tamaño.
-	 *
 	 * @return El tamaño del terreno.
 	 */
 	public ETerrainSize getSize() {
@@ -49,8 +62,6 @@ public final class Terrain {
 	}
 
 	/**
-	 * Obtiene la forma de la rejilla.
-	 *
 	 * @return La forma del terreno.
 	 */
 	public ETerrainShape getShape() {
@@ -58,76 +69,31 @@ public final class Terrain {
 	}
 
 	/**
-	 * Obtiene el ancho de la rejilla.
-	 *
-	 * @return El número de columnas.
+	 * @return El número de columnas de la rejilla, las que van con letras.
 	 */
-	public int getWidth() {
-		return size.getWidth(shape);
+	public int getColumns() {
+		return DIMENSIONS[size.ordinal()][shape.ordinal()][0];
 	}
 
 	/**
-	 * Obtiene el alto de la rejilla.
-	 *
-	 * @return El número de filas.
+	 * @return El número de filas de la rejilla, las que van con números.
 	 */
-	public int getHeight() {
-		return size.getHeight(shape);
+	public int getRows() {
+		return DIMENSIONS[size.ordinal()][shape.ordinal()][1];
 	}
 
 	/**
-	 * Obtiene el número total de casillas.
-	 *
-	 * @return Ancho por alto.
+	 * @return El número total de casillas.
 	 */
 	public int getCells() {
-		return getWidth() * getHeight();
+		return getColumns() * getRows();
 	}
 
 	/**
-	 * Obtiene el mínimo de tesoros de una rareza que debe contener.
-	 *
-	 * @param rarity La rareza de los tesoros.
-	 * @return El mínimo de tesoros.
-	 */
-	public int getMinTreasures(ETreasureRarity rarity) {
-		return size.getMinTreasures(rarity);
-	}
-
-	/**
-	 * Obtiene el máximo de tesoros de una rareza que puede contener.
-	 *
-	 * @param rarity La rareza de los tesoros.
-	 * @return El máximo de tesoros.
-	 */
-	public int getMaxTreasures(ETreasureRarity rarity) {
-		return size.getMaxTreasures(rarity);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Terrain)) {
-			return false;
-		}
-		Terrain other = (Terrain) obj;
-		return size == other.size && shape == other.shape;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(size, shape);
-	}
-
-	/**
-	 * Devuelve una descripción como "pequeño cuadrada (5x5)".
-	 *
-	 * @return El texto del terreno.
+	 * @return El nombre del terreno con sus medidas. <code>Pequeño cuadrado (5x5)</code>
 	 */
 	@Override
 	public String toString() {
-		return size + " " + shape + " (" + getWidth() + "x" + getHeight() + ")";
+		return UtilsHelper.ucfirst(size.toString()) + " " + shape + " (" + getColumns() + "x" + getRows() + ")";
 	}
 }

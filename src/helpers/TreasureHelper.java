@@ -67,4 +67,18 @@ public final class TreasureHelper {
 		}
 		return detail;
 	}
+	/**
+	 * Construye la ficha de un tesoro encontrado en una excavación, de forma similar al catálogo
+	 * pero con el código de la parte concreta encontrada.
+	 * @param treasure El tesoro.
+	 * @param partCode El código completo de la parte encontrada. <code>RRR_TTT_NNN_PPPP</code>
+	 * @return La ficha: nombre, descripción, código de la parte y tipo con rareza.
+	 */
+	public static String getFoundDetail(Treasure treasure, String partCode) {
+		String nl = System.lineSeparator();
+		return treasure.getName() + nl
+				+ treasure.getDescription() + nl
+				+ "Código: " + partCode + nl
+				+ getTypeAndRarity(treasure);
+	}
 }

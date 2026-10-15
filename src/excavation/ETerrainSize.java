@@ -3,141 +3,87 @@ package excavation;
 import treasures.ETreasureRarity;
 
 /**
- * Tamaño de un terreno. Cada tamaño define su rango de casillas, las
- * dimensiones de cada una de sus cinco formas y los mínimos y máximos de
- * tesoros de cada rareza.
- * Las dimensiones se expresan como ancho x alto (columnas x filas). 
+ * Los tamaños de terreno: el nivel de arqueólogo necesario para excavarlos, los tesoros
+ * mínimos de cada rareza que tienen siempre y la experiencia extra que dan.
  */
 public enum ETerrainSize {
-	/**
-	 * Pequeño: 15-25 casillas. Al menos un tesoro común, puede haber infrecuentes
-	 * y nunca raros.
-	 */
-	SMALL("pequeño", 15, 25,
-			new int[][] { { 5, 3 }, { 10, 2 }, { 3, 5 }, { 2, 10 }, { 5, 5 } },
-			new int[] { 1, 0, 0 },
-			new int[] { 4, 2, 0 }),
+	SMALL("pequeño", 0, 1, 0, 0, false, 2),
+	MEDIUM("mediano", 2, 3, 1, 0, true, 5),
+	LARGE("grande", 4, 5, 3, 1, true, 10);
 
-	/**
-	 * Mediano: 90-100 casillas. Al menos tres tesoros comunes y uno infrecuente;
-	 * puede haber raros.
-	 */
-	MEDIUM("mediano", 90, 100,
-			new int[][] { { 20, 5 }, { 30, 3 }, { 5, 20 }, { 3, 30 }, { 10, 10 } },
-			new int[] { 3, 1, 0 },
-			new int[] { 8, 4, 2 }),
-
-	/**
-	 * Grande: 200-225 casillas. Al menos cinco tesoros comunes, tres infrecuentes
-	 * y uno raro.
-	 */
-	LARGE("grande", 200, 225,
-			new int[][] { { 20, 10 }, { 40, 5 }, { 10, 20 }, { 5, 40 }, { 15, 15 } },
-			new int[] { 5, 3, 1 },
-			new int[] { 12, 7, 3 });
-
-	/** El texto asociado. */
+	/** El nombre del tamaño. */
 	private final String txt;
-
-	/** Número mínimo de casillas. */
-	private final int minCells;
-
-	/** Número máximo de casillas. */
-	private final int maxCells;
-
-	/**
-	 * Dimensiones {ancho, alto} de cada forma, indexadas por el orden de ETerrainShape.
-	 */
-	private final int[][] dimensions;
-
-	/** Mínimo de tesoros por rareza, indexado por el orden de ETreasureRarity. */
-	private final int[] minTreasures;
-
-	/** Máximo de tesoros por rareza, indexado por el orden de ETreasureRarity. */
-	private final int[] maxTreasures;
+	/** El nivel mínimo del arqueólogo para excavar este tamaño. */
+	private final int minLevel;
+	/** Los tesoros comunes que hay como mínimo. */
+	private final int minCommon;
+	/** Los tesoros infrecuentes que hay como mínimo. */
+	private final int minUncommon;
+	/** Los tesoros raros que hay como mínimo. */
+	private final int minRare;
+	/** Si puede tener tesoros raros. Los pequeños no, ni siquiera con habilidades. */
+	private final boolean allowsRare;
+	/** La experiencia extra que gana el arqueólogo al excavar este tamaño. */
+	private final int extraExp;
 
 	/**
-	 * Constructor del tamaño.
-	 *
-	 * @param txt          El texto asociado.
-	 * @param minCells     El número mínimo de casillas.
-	 * @param maxCells     El número máximo de casillas.
-	 * @param dimensions   Las dimensiones {ancho, alto} de cada forma, en el orden de ETerrainShape.
-	 * @param minTreasures El mínimo de tesoros por rareza, en el orden de ETreasureRarity.
-	 * @param maxTreasures El máximo de tesoros por rareza, en el orden de ETreasureRarity.
+	 * @param txt El nombre del tamaño.
+	 * @param minLevel El nivel mínimo del arqueólogo.
+	 * @param minCommon Los tesoros comunes mínimos.
+	 * @param minUncommon Los tesoros infrecuentes mínimos.
+	 * @param minRare Los tesoros raros mínimos.
+	 * @param allowsRare Si puede tener tesoros raros.
+	 * @param extraExp La experiencia extra al excavarlo.
 	 */
-	private ETerrainSize(String txt, int minCells, int maxCells, int[][] dimensions,
-			int[] minTreasures, int[] maxTreasures) {
+	private ETerrainSize(String txt, int minLevel, int minCommon, int minUncommon, int minRare,
+			boolean allowsRare, int extraExp) {
 		this.txt = txt;
-		this.minCells = minCells;
-		this.maxCells = maxCells;
-		this.dimensions = dimensions;
-		this.minTreasures = minTreasures;
-		this.maxTreasures = maxTreasures;
+		this.minLevel = minLevel;
+		this.minCommon = minCommon;
+		this.minUncommon = minUncommon;
+		this.minRare = minRare;
+		this.allowsRare = allowsRare;
+		this.extraExp = extraExp;
 	}
 
 	/**
-	 * Obtiene el número mínimo de casillas de este tamaño.
-	 *
-	 * @return El mínimo de casillas.
+	 * @return El nivel mínimo del arqueólogo para excavar este tamaño.
 	 */
-	public int getMinCells() {
-		return minCells;
+	public int getMinLevel() {
+		return minLevel;
 	}
 
 	/**
-	 * Obtiene el número máximo de casillas de este tamaño.
-	 *
-	 * @return El máximo de casillas.
-	 */
-	public int getMaxCells() {
-		return maxCells;
-	}
-
-	/**
-	 * Obtiene el ancho (columnas) de la rejilla para una forma.
-	 *
-	 * @param shape La forma del terreno.
-	 * @return El ancho en casillas.
-	 */
-	public int getWidth(ETerrainShape shape) {
-		return dimensions[shape.ordinal()][0];
-	}
-
-	/**
-	 * Obtiene el alto (filas) de la rejilla para una forma.
-	 *
-	 * @param shape La forma del terreno.
-	 * @return El alto en casillas.
-	 */
-	public int getHeight(ETerrainShape shape) {
-		return dimensions[shape.ordinal()][1];
-	}
-
-	/**
-	 * Obtiene el mínimo de tesoros de una rareza que debe tener un terreno de este
-	 * tamaño.
-	 *
-	 * @param rarity La rareza de los tesoros.
-	 * @return El mínimo de tesoros.
+	 * @param rarity La rareza.
+	 * @return Los tesoros de esa rareza que tiene este tamaño como mínimo.
 	 */
 	public int getMinTreasures(ETreasureRarity rarity) {
-		return minTreasures[rarity.ordinal()];
+		switch (rarity) {
+			case COMMON:
+				return minCommon;
+			case UNCOMMON:
+				return minUncommon;
+			default:
+				return minRare;
+		}
 	}
 
 	/**
-	 * Obtiene el máximo de tesoros de una rareza que puede tener un terreno de este
-	 * tamaño.
-	 *
-	 * @param rarity La rareza de los tesoros.
-	 * @return El máximo de tesoros.
+	 * @return Si puede tener tesoros raros.
 	 */
-	public int getMaxTreasures(ETreasureRarity rarity) {
-		return maxTreasures[rarity.ordinal()];
+	public boolean allowsRare() {
+		return allowsRare;
+	}
+
+	/**
+	 * @return La experiencia extra que gana el arqueólogo al excavar este tamaño.
+	 */
+	public int getExtraExp() {
+		return extraExp;
 	}
 
 	@Override
 	public String toString() {
-		return this.txt;
+		return txt;
 	}
 }

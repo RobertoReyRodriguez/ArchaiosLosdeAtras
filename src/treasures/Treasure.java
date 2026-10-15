@@ -1,5 +1,6 @@
 package treasures;
 
+import helpers.RandomHelper;
 
 /**
  * Clase que representa un tesoro dentro del juego.
@@ -157,4 +158,26 @@ public class Treasure {
     public void setPoints(int points) {
         this.points = points; 
     }
+/**
+     * Genera el codigo completo de una parte concreta del tesoro.
+     * @param part Numero de parte, empezando en 1
+     * @return El codigo completo <code>RRR_TTT_NNN_PPPP</code>
+     * @throws IllegalArgumentException Si la parte no esta entre 1 y el numero de partes
+     */
+    public String getPartCode(int part) {
+        if (part < 1 || part > parts) {
+            throw new IllegalArgumentException("La parte " + part + " no existe en " + code + ".");
+        }
+        return String.format("%s_%04d", code, part);
+    }
+
+    /**
+     * Genera el codigo completo de una parte aleatoria del tesoro.
+     * @return El codigo completo <code>RRR_TTT_NNN_PPPP</code>
+     */
+    public String getRandomPartCode() {
+        return getPartCode(RandomHelper.randomInt(1, parts));
+    }
 }
+
+
