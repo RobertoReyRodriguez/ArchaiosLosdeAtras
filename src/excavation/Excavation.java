@@ -92,13 +92,11 @@ public class Excavation {
 		this.actions = calculateActions();
 	}
 
-	// --- Generación ---
+	//  Generación
 
 	/**
 	 * Decide la rareza de cada tesoro en el orden del enunciado y los coloca en casillas al azar.
-	 * Primero los mínimos del terreno, luego aleatorios hasta el 10% de las casillas,
-	 * y después los extras del arqueólogo: raros, infrecuentes, comunes y aleatorios,
-	 * sin pasar nunca del 50% de las casillas.
+	 
 	 */
 	private void generateTreasures() {
 		int cells = terrain.getCells();
@@ -193,7 +191,7 @@ public class Excavation {
 
 	/**
 	 * @param withTreasure true para las casillas con tesoro, false para las vacías.
-	 * @return Las posiciones {fila, columna} de esas casillas.
+	 * @return Las posiciones de esas casillas.
 	 */
 	private List<int[]> getCells(boolean withTreasure) {
 		List<int[]> cells = new ArrayList<>();
@@ -208,8 +206,7 @@ public class Excavation {
 	}
 
 	/**
-	 * (25% de las casillas + acciones extra del arqueólogo) * factor de sus habilidades,
-	 * entre el 25% y el 75% de las casillas.
+	 * Calcula las acciones que le quedan al usuario
 	 * @return Las acciones de la excavación.
 	 */
 	private int calculateActions() {
@@ -220,10 +217,10 @@ public class Excavation {
 		return Math.max(min, Math.min(max, (int) total));
 	}
 
-	// --- Letras de las columnas ---
+	//  Letras de las columnas 
 
 	/**
-	 * Genera las letras de las columnas: A, B... Z y después AA, AB...
+	 * Genera las letras de las columnas
 	 * @param count Cuántas hacen falta.
 	 * @return Las letras, en orden.
 	 */
@@ -236,8 +233,7 @@ public class Excavation {
 	}
 
 	/**
-	 * Parte recursiva: añade una letra a la cadena y la pasa a la siguiente llamada.
-	 * Caso base: la cadena ya tiene la longitud buscada y se añade a la lista.
+	 * Añade una letra a la cadena y la pasa a la siguiente llamada.
 	 * Deja de añadir en cuanto la lista tiene todas las letras que hacen falta.
 	 * @param prefix La cadena construida hasta ahora.
 	 * @param length La longitud de las letras que se están generando.
@@ -259,7 +255,7 @@ public class Excavation {
 		}
 	}
 
-	// --- Proceso de excavación ---
+	//  Proceso de excavación 
 
 	/**
 	 * Realiza la excavación por turnos hasta que se acaban las acciones o se encuentran todos
@@ -312,8 +308,6 @@ public class Excavation {
 
 	/**
 	 * Pide las posiciones a excavar hasta que todas sean válidas.
-	 * Se pueden escribir varias separadas por espacios o comas, con el número y la letra
-	 * en cualquier orden. <code>1A 2B, C3</code>
 	 * @return Las posiciones {fila, columna}.
 	 */
 	private List<int[]> readPositions() {
@@ -338,8 +332,8 @@ public class Excavation {
 	}
 
 	/**
-	 * @param token Una posición escrita por el usuario, en mayúsculas. <code>3B</code> o <code>B3</code>
-	 * @return La posición {fila, columna}, o null si no es válida o está fuera de la rejilla.
+	 * @param token Una posición escrita por el usuario, en mayúsculas. 
+	 * @return La posición o null si no es válida o está fuera de la rejilla.
 	 */
 	private int[] parsePosition(String token) {
 		String number;
@@ -384,11 +378,10 @@ public class Excavation {
 		return new ArrayList<>(found);
 	}
 
-	// --- Mostrar ---
+	//  Mostrar 
 
 	/**
-	 * Muestra la rejilla con las letras arriba y los números a la izquierda, con cada casilla
-	 * centrada bajo su letra.
+	 * Muestra la rejilla 
 	 * @param uncovered true para mostrar todo lo que hay escondido; false para mostrar lo que ve el usuario.
 	 */
 	private void printGrid(boolean uncovered) {
@@ -427,7 +420,7 @@ public class Excavation {
 
 	/**
 	 * Muestra, por cada rareza que hay en la rejilla, los tesoros encontrados frente al total.
-	 * <code>1/3 tesoros comunes.</code>
+	 * 
 	 */
 	private void printSummary() {
 		Map<ETreasureRarity, Integer> total = new EnumMap<>(ETreasureRarity.class);
@@ -464,7 +457,7 @@ public class Excavation {
 		}
 	}
 
-	// --- Consultas ---
+	// Consultas 
 
 	/**
 	 * @param row La fila.
