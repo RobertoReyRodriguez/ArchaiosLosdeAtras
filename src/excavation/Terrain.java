@@ -11,9 +11,7 @@ import people.Archeologist;
 public class Terrain {
 
 	/**
-	 * Las medidas de cada terreno como columnas, filas. 
-	 * Primer índice: el tamaño, en el ordende  ETerrainSize.
-	 *  Segundo índice: la forma, en el orden de ETerrainShape
+	 * Las medidas de cada terreno como columnas y filas. 
 	 * 
 	 */
 	private static final int[][][] DIMENSIONS = {
