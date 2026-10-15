@@ -3,6 +3,7 @@ import java.util.Objects;
 import helpers.RandomHelper;
 import helpers.UtilsHelper;
 
+
 /**
  * Clase que representa un tesoro dentro del juego.
  * Almacena su informacion basica, tipo, rareza y puntuacion.

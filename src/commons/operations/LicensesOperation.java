@@ -1,14 +1,18 @@
 package commons.operations;
 
 import commons.Archaios;
+import excavation.ETerrainShape;
+import helpers.TextHelper;
+import helpers.UtilsHelper;
+import people.Archeologist;
 
 /**
- * Opción "Licencias" del menú principal.
- * Muestra las licencias (tipos de terreno que puede excavar) de cada arqueólogo
+ * Opción "Licencias" del menú principal: muestra las licencias de cada arqueólogo,
+ * es decir, las formas de terreno que puede excavar.
  */
 public class LicensesOperation implements IOperation {
 
-	/** La partida, para consultar y modificar sus datos. */
+	/** La partida, para consultar sus arqueólogos. */
 	private final Archaios archaios;
 
 	/**
@@ -25,6 +29,11 @@ public class LicensesOperation implements IOperation {
 
 	@Override
 	public void operation() {
-		System.out.println("Esta opción todavía no está disponible.");
+		for (Archeologist archeologist : archaios.getArcheologists()) {
+			System.out.println(TextHelper.header(archeologist.toString()));
+			for (ETerrainShape terrain : archeologist.getTerrains()) {
+				System.out.println("  -" + UtilsHelper.ucfirst(terrain.toString()));
+			}
+		}
 	}
 }
