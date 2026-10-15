@@ -92,7 +92,7 @@ public class Excavation {
 		this.actions = calculateActions();
 	}
 
-	// --- Generación ---
+	//  Generación
 
 	/**
 	 * Decide la rareza de cada tesoro en el orden del enunciado y los coloca en casillas al azar.
@@ -217,7 +217,7 @@ public class Excavation {
 		return Math.max(min, Math.min(max, (int) total));
 	}
 
-	// --- Letras de las columnas ---
+	//  Letras de las columnas 
 
 	/**
 	 * Genera las letras de las columnas
@@ -255,7 +255,7 @@ public class Excavation {
 		}
 	}
 
-	// --- Proceso de excavación ---
+	//  Proceso de excavación 
 
 	/**
 	 * Realiza la excavación por turnos hasta que se acaban las acciones o se encuentran todos
@@ -378,7 +378,7 @@ public class Excavation {
 		return new ArrayList<>(found);
 	}
 
-	// --- Mostrar ---
+	//  Mostrar 
 
 	/**
 	 * Muestra la rejilla 
@@ -457,7 +457,7 @@ public class Excavation {
 		}
 	}
 
-	// --- Consultas ---
+	// Consultas 
 
 	/**
 	 * @param row La fila.

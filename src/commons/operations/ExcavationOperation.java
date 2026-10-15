@@ -16,8 +16,6 @@ import treasures.Treasure;
 
 /**
  * Opción "Excavar" del menú principal.
- * Elegir región, arqueólogo y terreno, realizar la excavación y recoger lo encontrado:
- * se muestra, se registra en las estadísticas, se envía al Museo y da puntos y experiencia.
  */
 public class ExcavationOperation implements IOperation {
 
