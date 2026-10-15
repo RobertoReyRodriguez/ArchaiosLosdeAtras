@@ -19,6 +19,9 @@ import regions.Iberia;
 import regions.Rome;
 import skills.BaseSkills;
 import stats.Stats;
+import zeraf.ESistema;
+import zeraf.Zeraf;
+import zeraf.ZerafFactory;
 
 /**
  * Clase principal del sistema: contiene el main, el menú y los datos de la partida.
@@ -26,7 +29,7 @@ import stats.Stats;
 public class Archaios {
 
     /** El código del grupo otorgado por el profesor, común para toda la clase. */
-    public static final String GROUP_CODE = "CAMBIAR_POR_EL_CODIGO_DEL_PROFESOR";
+    public static final String GROUP_CODE = "2DAM2627";
 
     /** El código identificativo y único del usuario. */
     private String uid;
@@ -38,6 +41,8 @@ public class Archaios {
     private Stats stats = new Stats();
     /** Los puntos disponibles para contratar arqueólogos. */
     private int points;
+    /** La conexión con el Museo, de la librería Terra, para enviar los tesoros encontrados. */
+    private Zeraf zeraf;
 
     /** Las opciones del menú principal, en el orden en que se muestran. */
     private List<IOperation> operations;
@@ -73,6 +78,7 @@ public class Archaios {
 
         Archaios archaios = new Archaios();
         archaios.uid = InputHelper.readString("Código de usuario: ");
+        archaios.zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, archaios.uid, GROUP_CODE);
         archaios.gameName = InputHelper.readString("Nombre de la partida: ");
         archaios.archeologists.add(new Archeologist(InputHelper.readString("Nombre del primer arqueólogo: ")));
         archaios.createOperations();
@@ -154,6 +160,13 @@ public class Archaios {
      */
     public Stats getStats() {
         return stats;
+    }
+
+    /**
+     * @return La conexión con el Museo.
+     */
+    public Zeraf getZeraf() {
+        return zeraf;
     }
 
     /**
