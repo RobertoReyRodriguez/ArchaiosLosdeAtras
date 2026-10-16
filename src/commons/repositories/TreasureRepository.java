@@ -10,8 +10,7 @@ import treasures.Treasure;
 
 /**
  * Puerta de acceso a todos los tesoros del sistema.
- * No guarda tesoros propios: los busca en las regiones registradas en
- *  RegionRepository, que son las que los almacenan.
+ 
  */
 public final class TreasureRepository {
 
@@ -20,7 +19,7 @@ public final class TreasureRepository {
 
 	/**
 	 * Busca un tesoro por su código.
-	 * @param code El código del tesoro, con o sin la parte. <code>RRR_TTT_NNN[_PPPP]</code>
+	 * @param code El código del tesoro, con o sin la parte. 
 	 * @return El tesoro, o null si no existe.
 	 */
 	public static Treasure get(String code) {

@@ -189,7 +189,7 @@ public class Archaios {
     }
 
     /**
-     * Gasta puntos de la partida, por ejemplo al contratar.
+     * Gasta puntos de la partida
      * @param amount Los puntos a gastar.
      * @return true si había puntos suficientes y se han gastado; false si no, y no se gasta nada.
      */
