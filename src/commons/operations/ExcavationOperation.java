@@ -121,7 +121,9 @@ public class ExcavationOperation implements IOperation {
 		}
 		System.out.println(SEPARATOR);
 
-		int exp = points + excavation.getTerrain().getSize().getExtraExp();
+		// Si se termina antes de tiempo no se da el extra del tamaño, para que no se pueda
+		// subir de nivel empezando y dejando excavaciones sin excavar nada.
+		int exp = points + (excavation.isAbandoned() ? 0 : excavation.getTerrain().getSize().getExtraExp());
 		archaios.addPoints(points);
 		System.out.println("Puntos conseguidos: " + points);
 		System.out.println("El arqueólogo " + archeologist.getName() + " ha conseguido " + exp + " puntos de experiencia.");

@@ -11,7 +11,7 @@ import people.Archeologist;
 public class Terrain {
 
 	/**
-	 * Las medidas de cada terreno como columnas y filas. 
+	 * Las medidas de cada terreno como alto y ancho, igual que en el enunciado: <code>Fila: 5x3</code> son 5 filas y 3 columnas.
 	 * 
 	 */
 	private static final int[][][] DIMENSIONS = {
@@ -70,14 +70,14 @@ public class Terrain {
 	 * @return El número de columnas de la rejilla, las que van con letras.
 	 */
 	public int getColumns() {
-		return DIMENSIONS[size.ordinal()][shape.ordinal()][0];
+		return DIMENSIONS[size.ordinal()][shape.ordinal()][1];
 	}
 
 	/**
 	 * @return El número de filas de la rejilla, las que van con números.
 	 */
 	public int getRows() {
-		return DIMENSIONS[size.ordinal()][shape.ordinal()][1];
+		return DIMENSIONS[size.ordinal()][shape.ordinal()][0];
 	}
 
 	/**
@@ -92,6 +92,6 @@ public class Terrain {
 	 */
 	@Override
 	public String toString() {
-		return UtilsHelper.ucfirst(size.toString()) + " " + shape + " (" + getColumns() + "x" + getRows() + ")";
+		return UtilsHelper.ucfirst(size.toString()) + " " + shape + " (" + getRows() + "x" + getColumns() + ")";
 	}
 }

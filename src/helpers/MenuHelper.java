@@ -1,6 +1,7 @@
 package helpers;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -43,6 +44,32 @@ public final class MenuHelper {
 		}
 		print(items, labeler, exitLabel);
 		int option = InputHelper.readInt(prompt, 0, items.size());
+		return option == 0 ? null : items.get(option - 1);
+	}
+
+	/**
+	 * Muestra un menú con la opción 0 al final y permite, además, elegir opciones ocultas
+	 * escribiendo su número. Las ocultas no aparecen en la lista ni en el mensaje de error.
+	 * @param items Los elementos a elegir.
+	 * @param labeler Cómo se muestra cada elemento.
+	 * @param prompt El texto de la pregunta.
+	 * @param exitLabel El texto de la opción 0.
+	 * @param hidden Las opciones ocultas, por su número.
+	 * @return El elemento elegido, visible u oculto, o null si se elige la opción 0.
+	 * @throws IllegalArgumentException Si el número de una oculta coincide con uno visible.
+	 */
+	public static <T> T choose(List<T> items, Function<? super T, String> labeler, String prompt, String exitLabel,
+			Map<Integer, ? extends T> hidden) {
+		for (int number : hidden.keySet()) {
+			if (number >= 0 && number <= items.size()) {
+				throw new IllegalArgumentException("La opción oculta " + number + " coincide con una visible.");
+			}
+		}
+		print(items, labeler, exitLabel);
+		int option = InputHelper.readInt(prompt, 0, items.size(), hidden.keySet());
+		if (hidden.containsKey(option)) {
+			return hidden.get(option);
+		}
 		return option == 0 ? null : items.get(option - 1);
 	}
 

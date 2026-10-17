@@ -1,0 +1,1 @@
+En este paquete se encuentran los trucos del sistema. 

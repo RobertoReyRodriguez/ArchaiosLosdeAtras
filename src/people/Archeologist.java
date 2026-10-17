@@ -171,9 +171,18 @@ public class Archeologist {
     public void addSkill(Skill skill) {
         skills.add(skill);
         for (ETerrainShape terrain : skill.getTerrains()) {
-            if (!terrains.contains(terrain)) {
-                terrains.add(terrain);
-            }
+            addTerrain(terrain);
+        }
+    }
+
+    /**
+     * Añade una forma de terreno si todavía no la tiene. Lo usan las habilidades de terreno
+     * y el truco que desbloquea todos los terrenos.
+     * @param terrain La forma de terreno.
+     */
+    public void addTerrain(ETerrainShape terrain) {
+        if (!terrains.contains(terrain)) {
+            terrains.add(terrain);
         }
     }
 
