@@ -8,9 +8,8 @@ import treasures.ETreasureRarity;
 
 /**
  * Base de todas las habilidades de los arqueólogos.
- * Tiene un método para cada tipo de bono posible, que por defecto no da nada;
- * cada tipo de habilidad sobrescribe los suyos. Los métodos coinciden con los
- * de Archeologist, que suma los bonos de todas sus habilidades.
+ * Tiene un método para cada tipo de bonus posible, que por defecto no da nada;
+ * cada tipo de habilidad sobrescribe los suyos. .
  */
 public abstract class Skill {
 
@@ -83,7 +82,7 @@ public abstract class Skill {
 		second.incompatibilities.add(first);
 	}
 
-	// --- Bonos. Por defecto, ninguno. ---
+	// --- Bonus. 
 
 	/**
 	 * @return Los tesoros extra de rareza aleatoria.

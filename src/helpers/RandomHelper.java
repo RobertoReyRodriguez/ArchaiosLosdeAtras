@@ -18,14 +18,6 @@ public final class RandomHelper {
 	}
 
 	/**
-	 * Fija la semilla del generador para que los resultados se repitan. Solo para pruebas, borrar este método a la hora de juntar el trabajo final.
-	 * @param seed La semilla.
-	 */
-	public static void setSeed(long seed) {
-		RANDOM.setSeed(seed);
-	}
-
-	/**
 	 * Devuelve un número entero aleatorio dentro de un rango.
 	 * @param min El valor mínimo, incluido.
 	 * @param max El valor máximo, incluido.

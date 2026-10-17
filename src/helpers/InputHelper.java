@@ -1,8 +1,10 @@
 package helpers;
 
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Lectura y validación de las entradas del usuario por consola.
@@ -11,6 +13,8 @@ public final class InputHelper {
 
 	/** Única fuente de lectura de la entrada estándar en todo el sistema. */
 	private static final Scanner SCANNER = new Scanner(System.in);
+	/** Si la entrada estándar se ha cerrado. */
+	private static boolean closed = false;
 
 	private InputHelper() {
 	}
@@ -24,9 +28,17 @@ public final class InputHelper {
 	public static String readLine(String prompt) {
 		System.out.print(prompt);
 		if (!SCANNER.hasNextLine()) {
+			closed = true;
 			throw new IllegalStateException("La entrada estándar se ha cerrado.");
 		}
 		return SCANNER.nextLine().trim();
+	}
+
+	/**
+	 * @return true si la entrada estándar se ha cerrado y ya no se puede leer nada más.
+	 */
+	public static boolean isClosed() {
+		return closed;
 	}
 
 	/**
@@ -52,6 +64,21 @@ public final class InputHelper {
 	 * @throws IllegalArgumentException Si <code>min</code> es mayor que <code>max</code>.
 	 */
 	public static int readInt(String prompt, int min, int max) {
+		return readInt(prompt, min, max, Collections.emptySet());
+	}
+
+	/**
+	 * Lee un número entero dentro de un rango o que sea uno de los números ocultos,
+	 * repitiendo la pregunta hasta obtenerlo. El mensaje de error solo menciona el rango,
+	 * para que los números ocultos no se vean.
+	 * @param prompt El texto que se muestra antes de leer.
+	 * @param min El valor mínimo permitido, incluido.
+	 * @param max El valor máximo permitido, incluido.
+	 * @param hidden Números permitidos fuera del rango que no se le muestran al usuario.
+	 * @return El número leído, dentro del rango o de los ocultos.
+	 * @throws IllegalArgumentException Si <code>min</code> es mayor que <code>max</code>.
+	 */
+	public static int readInt(String prompt, int min, int max, Set<Integer> hidden) {
 		if (min > max) {
 			throw new IllegalArgumentException("Rango inválido: " + min + " > " + max);
 		}
@@ -59,7 +86,7 @@ public final class InputHelper {
 			String text = readLine(prompt);
 			try {
 				int value = Integer.parseInt(text);
-				if (value >= min && value <= max) {
+				if ((value >= min && value <= max) || hidden.contains(value)) {
 					return value;
 				}
 			} catch (NumberFormatException e) {

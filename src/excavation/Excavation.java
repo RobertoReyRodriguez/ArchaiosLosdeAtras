@@ -67,6 +67,8 @@ public class Excavation {
 	private int revealed;
 	/** Las acciones que le quedan al usuario. */
 	private int actions;
+	/** Si el usuario ha terminado la excavación antes de tiempo. */
+	private boolean abandoned;
 
 	/**
 	 * Prepara la excavación: genera los tesoros, aplica las habilidades de revelación
@@ -164,12 +166,13 @@ public class Excavation {
 	/**
 	 * Habilidades de suposición: por cada una, marca con '?' tres casillas al azar,
 	 * una con tesoro y dos sin él. Se aplican tras la limpieza: si una de las elegidas
-	 * ya está limpiada, se queda como está y no se elige otra.
+	 * ya está limpiada, se queda como está y no se elige otra. Cada suposición elige
+	 * entre las casillas que no tienen ya un '?', para no repetir las de otra.
 	 */
 	private void applyGuesses() {
 		for (int i = 0; i < archeologist.getGuesses(); i++) {
-			List<int[]> cells = RandomHelper.randomElements(getCells(true), 1);
-			cells.addAll(RandomHelper.randomElements(getCells(false), 2));
+			List<int[]> cells = RandomHelper.randomElements(withoutGuess(getCells(true)), 1);
+			cells.addAll(RandomHelper.randomElements(withoutGuess(getCells(false)), 2));
 			for (int[] cell : cells) {
 				if (revealed >= getMaxRevealed()) {
 					return;
@@ -180,6 +183,17 @@ public class Excavation {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Quita de una lista las casillas que ya tienen un '?'. Las limpiadas se quedan,
+	 * porque si una suposición elige una de ellas no se escoge otra.
+	 * @param cells Las posiciones de las casillas.
+	 * @return La misma lista, sin las casillas con '?'.
+	 */
+	private List<int[]> withoutGuess(List<int[]> cells) {
+		cells.removeIf(cell -> grid[cell[0]][cell[1]] == GUESS);
+		return cells;
 	}
 
 	/**
@@ -271,7 +285,13 @@ public class Excavation {
 				printSummary();
 			}
 			printGrid(false);
-			for (int[] position : readPositions()) {
+			List<int[]> positions = readPositions();
+			if (positions == null) {
+				System.out.println("Has terminado la excavación antes de acabar las acciones.");
+				abandoned = true;
+				break;
+			}
+			for (int[] position : positions) {
 				if (actions == 0 || allFound()) {
 					break;
 				}
@@ -282,6 +302,13 @@ public class Excavation {
 			System.out.println("¡Has encontrado todos los tesoros!");
 		}
 		return finish();
+	}
+
+	/**
+	 * @return true si el usuario terminó la excavación antes de tiempo con la opción 0.
+	 */
+	public boolean isAbandoned() {
+		return abandoned;
 	}
 
 	/**
@@ -307,16 +334,26 @@ public class Excavation {
 	}
 
 	/**
-	 * Pide las posiciones a excavar hasta que todas sean válidas.
-	 * @return Las posiciones {fila, columna}.
+	 * Pide las posiciones a excavar hasta que todas sean válidas. Con 0 se puede terminar
+	 * la excavación antes de tiempo, después de confirmarlo.
+	 * @return Las posiciones {fila, columna}, o null si el usuario termina la excavación.
 	 */
 	private List<int[]> readPositions() {
 		while (true) {
-			String[] tokens = InputHelper.readString("Posiciones a excavar (por ejemplo 1A 2B): ")
-					.toUpperCase().split("[\\s,;]+");
+			String text = InputHelper.readString("Posiciones a excavar (por ejemplo 1A 2B, 0 para terminar): ");
+			if (text.equals("0")) {
+				if (InputHelper.readYesNo("¿Seguro que quieres terminar la excavación? Te quedas con lo que hayas encontrado")) {
+					return null;
+				}
+				continue;
+			}
+			String[] tokens = text.toUpperCase().split("[\\s,;]+");
 			List<int[]> positions = new ArrayList<>();
 			String invalid = null;
 			for (String token : tokens) {
+				if (token.isEmpty()) {
+					continue;
+				}
 				int[] position = parsePosition(token);
 				if (position == null) {
 					invalid = token;
@@ -327,7 +364,11 @@ public class Excavation {
 			if (invalid == null && !positions.isEmpty()) {
 				return positions;
 			}
-			System.out.println("La posición " + invalid + " no existe. Escribe el número de la fila y la letra de la columna.");
+			if (invalid == null) {
+				System.out.println("No has escrito ninguna posición. Escribe el número de la fila y la letra de la columna.");
+			} else {
+				System.out.println("La posición " + invalid + " no existe. Escribe el número de la fila y la letra de la columna.");
+			}
 		}
 	}
 
@@ -379,6 +420,14 @@ public class Excavation {
 	}
 
 	//  Mostrar 
+
+	/**
+	 * Muestra la rejilla con todos los tesoros a la vista. Solo lo usa el truco de rayos X.
+	 */
+	public void printTreasures() {
+		System.out.println("Rayos X: así está la rejilla por debajo.");
+		printGrid(true);
+	}
 
 	/**
 	 * Muestra la rejilla 
