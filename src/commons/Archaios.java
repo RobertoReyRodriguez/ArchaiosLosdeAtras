@@ -6,12 +6,19 @@ import commons.operations.ExcavationOperation;
 import commons.operations.IOperation;
 import commons.operations.LicensesOperation;
 import commons.operations.SkillsOperation;
+import commons.operations.cheats.ExpCheat;
+import commons.operations.cheats.HireCheat;
+import commons.operations.cheats.PointsCheat;
+import commons.operations.cheats.SkillCheat;
+import commons.operations.cheats.TerrainsCheat;
 import commons.repositories.RegionRepository;
 import helpers.ErrorHelper;
 import helpers.InputHelper;
 import helpers.MenuHelper;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import people.Archeologist;
 import regions.Atlas;
 import regions.Greece;
@@ -46,6 +53,8 @@ public class Archaios {
 
     /** Las opciones del menú principal, en el orden en que se muestran. */
     private List<IOperation> operations;
+    /** Las opciones ocultas del menú principal (trucos para probar el sistema), por su número. */
+    private Map<Integer, IOperation> cheats;
 
     public static void main(String[] args) {
         preInit();
@@ -86,7 +95,8 @@ public class Archaios {
     }
 
     /**
-     * Crea las opciones del menú principal. Cada una recibe la partida si necesita sus datos.
+     * Crea las opciones del menú principal y las ocultas (trucos del 95 al 99).
+     * Cada una recibe la partida si necesita sus datos.
      */
     private void createOperations() {
         operations = new ArrayList<>();
@@ -97,6 +107,13 @@ public class Archaios {
         operations.add(new CatalogOperation());
         operations.add(new ExcavationOperation(this));
         operations.add(stats);
+
+        cheats = new LinkedHashMap<>();
+        cheats.put(99, new PointsCheat(this));
+        cheats.put(98, new ExpCheat(this));
+        cheats.put(97, new SkillCheat(this));
+        cheats.put(96, new TerrainsCheat(this));
+        cheats.put(95, new HireCheat(this));
     }
 
     /**
@@ -123,7 +140,7 @@ public class Archaios {
     private IOperation menu() {
         System.out.println();
         System.out.println("=== " + gameName + " === Puntos: " + points);
-        return MenuHelper.choose(operations, IOperation::getName, "Elige una opción: ", "Salir");
+        return MenuHelper.choose(operations, IOperation::getName, "Elige una opción: ", "Salir", cheats);
     }
 
     /**

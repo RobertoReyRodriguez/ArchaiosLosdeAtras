@@ -1,8 +1,10 @@
 package helpers;
 
 
+import java.util.Collections;
 import java.util.Locale;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * Lectura y validación de las entradas del usuario por consola.
@@ -32,7 +34,7 @@ public final class InputHelper {
 	/**
 	 * Lee un texto no vacío, repitiendo la pregunta hasta obtenerlo.
 	 * @param prompt El texto que se muestra antes de leer.
-	 * @return El texto leído, nunca vacío.
+	 * @return El texto leído.
 	 */
 	public static String readString(String prompt) {
 		String text = readLine(prompt);
@@ -48,10 +50,25 @@ public final class InputHelper {
 	 * @param prompt El texto que se muestra antes de leer.
 	 * @param min El valor mínimo permitido, incluido.
 	 * @param max El valor máximo permitido, incluido.
-	 * @return El número leído, dentro de [<code>min</code>, <code>max</code>].
-	 * @throws IllegalArgumentException Si <code>min</code> es mayor que <code>max</code>.
+	 * @return El número leído
+	 * @throws IllegalArgumentException Si min es mayor que max
 	 */
 	public static int readInt(String prompt, int min, int max) {
+		return readInt(prompt, min, max, Collections.emptySet());
+	}
+
+	/**
+	 * Lee un número entero dentro de un rango o que sea uno de los números ocultos,
+	 * repitiendo la pregunta hasta obtenerlo. El mensaje de error solo menciona el rango,
+	 * para que los números ocultos no se vean.
+	 * @param prompt El texto que se muestra antes de leer.
+	 * @param min El valor mínimo permitido, incluido.
+	 * @param max El valor máximo permitido, incluido.
+	 * @param hidden Números permitidos fuera del rango que no se le muestran al usuario.
+	 * @return El número leído, dentro del rango o de los ocultos.
+	 * @throws IllegalArgumentException Si min es mayor que max.
+	 */
+	public static int readInt(String prompt, int min, int max, Set<Integer> hidden) {
 		if (min > max) {
 			throw new IllegalArgumentException("Rango inválido: " + min + " > " + max);
 		}
@@ -59,7 +76,7 @@ public final class InputHelper {
 			String text = readLine(prompt);
 			try {
 				int value = Integer.parseInt(text);
-				if (value >= min && value <= max) {
+				if ((value >= min && value <= max) || hidden.contains(value)) {
 					return value;
 				}
 			} catch (NumberFormatException e) {
@@ -73,7 +90,7 @@ public final class InputHelper {
 	 * Lee una confirmación sí/no, repitiendo la pregunta hasta obtener una respuesta válida.
 	 * Acepta s, si, sí, n y no, sin distinguir mayúsculas.
 	 * @param prompt El texto que se muestra antes de leer, sin el indicador (s/n).
-	 * @return <code>true</code> si la respuesta es afirmativa, <code>false</code> si es negativa.
+	 * @return true si la respuesta es afirmativa, false si es negativa.
 	 */
 	public static boolean readYesNo(String prompt) {
 		String fullPrompt = prompt + " (s/n): ";
