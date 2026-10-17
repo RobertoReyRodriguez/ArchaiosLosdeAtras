@@ -13,6 +13,8 @@ public final class InputHelper {
 
 	/** Única fuente de lectura de la entrada estándar en todo el sistema. */
 	private static final Scanner SCANNER = new Scanner(System.in);
+	/** Si la entrada estándar se ha cerrado. */
+	private static boolean closed = false;
 
 	private InputHelper() {
 	}
@@ -26,15 +28,23 @@ public final class InputHelper {
 	public static String readLine(String prompt) {
 		System.out.print(prompt);
 		if (!SCANNER.hasNextLine()) {
+			closed = true;
 			throw new IllegalStateException("La entrada estándar se ha cerrado.");
 		}
 		return SCANNER.nextLine().trim();
 	}
 
 	/**
+	 * @return true si la entrada estándar se ha cerrado y ya no se puede leer nada más.
+	 */
+	public static boolean isClosed() {
+		return closed;
+	}
+
+	/**
 	 * Lee un texto no vacío, repitiendo la pregunta hasta obtenerlo.
 	 * @param prompt El texto que se muestra antes de leer.
-	 * @return El texto leído.
+	 * @return El texto leído, nunca vacío.
 	 */
 	public static String readString(String prompt) {
 		String text = readLine(prompt);
@@ -50,8 +60,8 @@ public final class InputHelper {
 	 * @param prompt El texto que se muestra antes de leer.
 	 * @param min El valor mínimo permitido, incluido.
 	 * @param max El valor máximo permitido, incluido.
-	 * @return El número leído
-	 * @throws IllegalArgumentException Si min es mayor que max
+	 * @return El número leído, dentro de [<code>min</code>, <code>max</code>].
+	 * @throws IllegalArgumentException Si <code>min</code> es mayor que <code>max</code>.
 	 */
 	public static int readInt(String prompt, int min, int max) {
 		return readInt(prompt, min, max, Collections.emptySet());
@@ -66,7 +76,7 @@ public final class InputHelper {
 	 * @param max El valor máximo permitido, incluido.
 	 * @param hidden Números permitidos fuera del rango que no se le muestran al usuario.
 	 * @return El número leído, dentro del rango o de los ocultos.
-	 * @throws IllegalArgumentException Si min es mayor que max.
+	 * @throws IllegalArgumentException Si <code>min</code> es mayor que <code>max</code>.
 	 */
 	public static int readInt(String prompt, int min, int max, Set<Integer> hidden) {
 		if (min > max) {
@@ -90,7 +100,7 @@ public final class InputHelper {
 	 * Lee una confirmación sí/no, repitiendo la pregunta hasta obtener una respuesta válida.
 	 * Acepta s, si, sí, n y no, sin distinguir mayúsculas.
 	 * @param prompt El texto que se muestra antes de leer, sin el indicador (s/n).
-	 * @return true si la respuesta es afirmativa, false si es negativa.
+	 * @return <code>true</code> si la respuesta es afirmativa, <code>false</code> si es negativa.
 	 */
 	public static boolean readYesNo(String prompt) {
 		String fullPrompt = prompt + " (s/n): ";

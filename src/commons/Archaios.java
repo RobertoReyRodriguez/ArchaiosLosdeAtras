@@ -118,18 +118,31 @@ public class Archaios {
 
     /**
      * Muestra el menú principal y ejecuta la opción elegida hasta que el usuario sale.
+     * Si se cierra la entrada (Ctrl+Z en Windows, Ctrl+D en Linux), sale del programa
+     * sin mostrar un error, porque ya no se puede leer nada más.
      */
     private void run() {
-        IOperation operation = menu();
-        while (operation != null) {
-            System.out.println();
-            System.out.println("--- " + operation.getName() + " ---");
-            try {
-                operation.operation();
-            } catch (RuntimeException e) {
-                ErrorHelper.handle(e);
+        try {
+            IOperation operation = menu();
+            while (operation != null) {
+                System.out.println();
+                System.out.println("--- " + operation.getName() + " ---");
+                try {
+                    operation.operation();
+                } catch (RuntimeException e) {
+                    if (InputHelper.isClosed()) {
+                        throw e;
+                    }
+                    ErrorHelper.handle(e);
+                }
+                operation = menu();
             }
-            operation = menu();
+        } catch (RuntimeException e) {
+            if (!InputHelper.isClosed()) {
+                throw e;
+            }
+            System.out.println();
+            System.out.println("Programa cerrado por el usuario.");
         }
     }
 
