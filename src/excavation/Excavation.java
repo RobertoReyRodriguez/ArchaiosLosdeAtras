@@ -86,7 +86,7 @@ public class Excavation {
 		for (char[] row : grid) {
 			Arrays.fill(row, NOT_DUG);
 		}
-		this.letters = generateLetters(terrain.getColumns());
+		this.letters = Excavation.generateLetters(terrain.getColumns());
 
 		generateTreasures();
 		applyCleaning();
