@@ -1,8 +1,6 @@
 package treasures;
-import java.util.Objects;
-import helpers.RandomHelper;
-import helpers.UtilsHelper;
 
+import helpers.RandomHelper;
 
 /**
  * Clase que representa un tesoro dentro del juego.
@@ -10,7 +8,7 @@ import helpers.UtilsHelper;
  * 
  * @author David B.R
  */
-public class Treasure implements Comparable<Treasure> {
+public class Treasure {
 
     private String code;
     private String name;
@@ -47,37 +45,6 @@ public class Treasure implements Comparable<Treasure> {
         this.type = type;
         this.parts = parts < 1 ? 1 : parts;
         this.points = points;
-    }
-
-    /**
-     * Comprueba si el tipo de tesoro es de género femenino.
-     * @return true si es femenino, false si es masculino.
-     */
-    public boolean isFeminine() {
-        if (this.type == null) {
-            return false;
-        }
-        return this.type == ETreasureType.COIN
-                || this.type == ETreasureType.TILE
-                || this.type == ETreasureType.BEAD
-                || this.type == ETreasureType.JEWELRY
-                || this.type == ETreasureType.CERAMIC
-                || this.type == ETreasureType.STELE;
-    }
-
-    /**
-     * Devuelve la rareza formateada según el género del tipo de tesoro.
-     * 
-     * @return Rareza formateada ("rara" o "raro", etc.).
-     */
-    public String getFormattedRarity() {
-        if (this.rarity == null) {
-            return "";
-        }
-        if (this.rarity == ETreasureRarity.RARE) {
-            return isFeminine() ? "rara" : "raro";
-        }
-        return this.rarity.toString();
     }
 
     /**
@@ -191,85 +158,26 @@ public class Treasure implements Comparable<Treasure> {
     public void setPoints(int points) {
         this.points = points; 
     }
-
-    /**
-     * Genera el código completo del tesoro seleccionando una parte
-     * de forma aleatoria entre 1 y el total de partes disponibles.
-     *
-     * @return El codigo completo formateado (RRR_TTT_NNN_PPPP).
+/**
+     * Genera el codigo completo de una parte concreta del tesoro.
+     * @param part Numero de parte, empezando en 1
+     * @return El codigo completo <code>RRR_TTT_NNN_PPPP</code>
+     * @throws IllegalArgumentException Si la parte no esta entre 1 y el numero de partes
      */
-    public String generateRandomPartCode() {
-        int randomPart = RandomHelper.randomInt(1, this.parts);
-        return getFullPartCode(randomPart);
-    }
-
-    /**
-     * Devuelve el código completo añadiendo el numero de parte especificado
-     * formateado a 4 digitos con ceros a la izquierda.
-     *
-     * @param partNumber Numero de la parte a formatear.
-     * @return El codigo formateado (ejemplo: GRC_MON_001_0005).
-     */
-    public String getFullPartCode(int partNumber) {
-        return String.format("%s_%04d", this.code, partNumber);
-    }
-
-    public String getCatalogDetails() {
-        String typeStr = (this.type != null) ? UtilsHelper.ucfirst(this.type.toString()) : "";
-        
-        String result = "-------------------- " + this.name + " --------------------\n"
-                + this.description + "\n"
-                + "Código: " + this.code + "\n"
-                + typeStr + " " + getFormattedRarity();
-
-        if (this.parts > 1) {
-            String wordDivided = isFeminine() ? "dividida" : "dividido";
-            result += " " + wordDivided + " en " + this.parts + " partes";
+    public String getPartCode(int part) {
+        if (part < 1 || part > parts) {
+            throw new IllegalArgumentException("La parte " + part + " no existe en " + code + ".");
         }
-
-        return result;
-    }
-
-     /**
-     * Devuelve los datos formateados del tesoro encontrado tras una excavacion.
-     * @param fullPartCode El codigo completo que incluye la parte encontrada.
-     * @return Texto formateado para mostrar en la excavacion.
-     */
-  public String getFoundDetails(String fullPartCode) {
-        String result = this.name + "\n";
-        result += this.description + "\n";
-        result += "Código: " + fullPartCode + "\n";
-        result += this.type + " " + getFormattedRarity();
-        return result;
-    }
-    
-    /**
-    * Devuelve una representacion textual del tesoro con su nombre y codigo base.
-    * Ejemplo: "Calco griego (GRC_MON_001)"
-    * 
-     * @return El nombre y codigo del tesoro en formato legible.
-    */
-    public String toString() {
-        return this.name + " (" + this.code + ")";
+        return String.format("%s_%04d", code, part);
     }
 
     /**
-     * Compara este tesoro con otro basándose en su código.
-     * Permite ordenar las listas de tesoros alfabéticamente por código.
-     * 
-     * @param other El otro tesoro a comparar.
-     * @return Un entero negativo, cero o positivo si este código es menor,
-     *         igual o mayor que el del otro tesoro.
+     * Genera el codigo completo de una parte aleatoria del tesoro.
+     * @return El codigo completo <code>RRR_TTT_NNN_PPPP</code>
      */
-
-    @Override
-    public int compareTo(Treasure other) {
-        if (other == null || other.getCode() == null) {
-            return 1;
-        }
-        if (this.code == null) {
-            return -1;
-        }
-        return this.code.compareTo(other.getCode());
+    public String getRandomPartCode() {
+        return getPartCode(RandomHelper.randomInt(1, parts));
     }
 }
+
+
