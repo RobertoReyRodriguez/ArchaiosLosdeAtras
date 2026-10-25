@@ -1,14 +1,16 @@
 package commons.operations;
 
 import commons.Archaios;
-import excavation.ETerrainSize;
+import excavation.ETerrain;
 import helpers.InputHelper;
 import helpers.MenuHelper;
 import helpers.RandomHelper;
 import helpers.TextHelper;
 import helpers.UtilsHelper;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import people.Archeologist;
 import skills.Skill;
 import treasures.ETreasureRarity;
@@ -85,8 +87,12 @@ public class ArcheologistsOperation implements IOperation {
 			System.out.println("Exp: " + archeologist.getExp() + "/" + archeologist.getExpToLevelUp());
 		}
 		System.out.println("Terrenos:");
-		for (ETerrainSize size : archeologist.getTerrainSizes()) {
-			System.out.println("  -" + UtilsHelper.ucfirst(size.toString()));
+		Set<String> sizes = new LinkedHashSet<>();
+		for (ETerrain terrain : archeologist.getAvailableTerrains()) {
+			sizes.add(terrain.getSizeName());
+		}
+		for (String size : sizes) {
+			System.out.println("  -" + UtilsHelper.ucfirst(size));
 		}
 		printSkills(archeologist.getSkills());
 	}
