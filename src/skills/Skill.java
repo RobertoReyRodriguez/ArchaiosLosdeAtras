@@ -1,6 +1,6 @@
 package skills;
 
-import excavation.ETerrainShape;
+import excavation.ETerrain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -143,11 +143,11 @@ public abstract class Skill {
 	}
 
 	/**
-	 * Las formas de terreno que añade la habilidad al obtenerse. No es un bono:
-	 * el arqueólogo las añade a su lista de terrenos cuando aprende la habilidad.
-	 * @return Las formas de terreno a añadir. Vacía si no añade ninguna.
+	 * Los terrenos que desbloquea la habilidad al obtenerse. No es un bono:
+	 * el arqueólogo los añade a su lista de terrenos cuando aprende la habilidad.
+	 * @return Los terrenos a desbloquear. Vacía si no desbloquea ninguno.
 	 */
-	public List<ETerrainShape> getTerrains() {
+	public List<ETerrain> getTerrains() {
 		return Collections.emptyList();
 	}
 
