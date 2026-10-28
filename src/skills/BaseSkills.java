@@ -1,7 +1,7 @@
 package skills;
 
 import commons.repositories.SkillRepository;
-import excavation.ETerrainShape;
+import excavation.ETerrain;
 import treasures.ETreasureRarity;
 
 /**
@@ -102,10 +102,12 @@ public final class BaseSkills {
 	private static void registerTerrainSkills() {
 		Skill licenseA = SkillRepository.register(new TerrainSkill("Licencia A",
 				"Permite excavar terrenos con forma de fila y de columna.",
-				ETerrainShape.ROW, ETerrainShape.COLUMN));
+				ETerrain.SMALL_ROW, ETerrain.MEDIUM_ROW, ETerrain.LARGE_ROW,
+				ETerrain.SMALL_COLUMN, ETerrain.MEDIUM_COLUMN, ETerrain.LARGE_COLUMN));
 		Skill licenseB = SkillRepository.register(new TerrainSkill("Licencia B",
 				"Permite excavar terrenos con forma horizontal y vertical.",
-				ETerrainShape.HORIZONTAL, ETerrainShape.VERTICAL));
+				ETerrain.SMALL_HORIZONTAL, ETerrain.MEDIUM_HORIZONTAL, ETerrain.LARGE_HORIZONTAL,
+				ETerrain.SMALL_VERTICAL, ETerrain.MEDIUM_VERTICAL, ETerrain.LARGE_VERTICAL));
 		Skill.setIncompatible(licenseA, licenseB);
 	}
 }

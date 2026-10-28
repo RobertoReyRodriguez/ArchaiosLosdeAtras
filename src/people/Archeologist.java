@@ -6,8 +6,7 @@ import java.util.List;
 
 import commons.repositories.RegionRepository;
 import commons.repositories.SkillRepository;
-import excavation.ETerrainShape;
-import excavation.ETerrainSize;
+import excavation.ETerrain;
 import helpers.MenuHelper;
 import helpers.RandomHelper;
 import regions.Region;
@@ -33,8 +32,8 @@ public class Archeologist {
     private int level;
     /** La experiencia dentro del nivel actual. A nivel máximo, la obtenida a mayores. */
     private int exp;
-    /** Las formas de terreno que puede excavar. */
-    private List<ETerrainShape> terrains = new ArrayList<>();
+    /** Los terrenos que tiene desbloqueados. Para excavarlos también necesita el nivel de cada uno. */
+    private List<ETerrain> terrains = new ArrayList<>();
     /** Las habilidades de las que dispone. */
     private List<Skill> skills = new ArrayList<>();
     /** La región en la que se especializa al llegar a nivel máximo. Null hasta entonces. */
@@ -42,14 +41,16 @@ public class Archeologist {
 
     /**
      * Crea un arqueólogo nuevo a nivel 0, sin experiencia ni habilidades.
-     * Empieza pudiendo excavar solo terrenos cuadrados.
+     * Empieza con los terrenos cuadrados desbloqueados.
      * @param name El nombre del arqueólogo.
      * @param rarity La rareza con la que se contrata.
      */
     public Archeologist(String name, ETreasureRarity rarity) {
         this.name = name;
         this.rarity = rarity;
-        this.terrains.add(ETerrainShape.SQUARE);
+        this.terrains.add(ETerrain.SMALL_SQUARE);
+        this.terrains.add(ETerrain.MEDIUM_SQUARE);
+        this.terrains.add(ETerrain.LARGE_SQUARE);
     }
 
     /**
@@ -120,23 +121,24 @@ public class Archeologist {
     }
 
     /**
-     * @return Las formas de terreno que puede excavar. No se puede modificar.
+     * @return Los terrenos que tiene desbloqueados, sin tener en cuenta su nivel. No se puede modificar.
      */
-    public List<ETerrainShape> getTerrains() {
+    public List<ETerrain> getTerrains() {
         return Collections.unmodifiableList(terrains);
     }
 
     /**
-     * @return Los tamaños de terreno que puede excavar según su nivel.
+     * @return Los terrenos que puede excavar ahora mismo: los que tiene desbloqueados y para los
+     * que llega a su nivel mínimo, en el orden del enumerado (por tamaño y forma).
      */
-    public List<ETerrainSize> getTerrainSizes() {
-        List<ETerrainSize> sizes = new ArrayList<>();
-        for (ETerrainSize size : ETerrainSize.values()) {
-            if (level >= size.getMinLevel()) {
-                sizes.add(size);
+    public List<ETerrain> getAvailableTerrains() {
+        List<ETerrain> available = new ArrayList<>();
+        for (ETerrain terrain : ETerrain.values()) {
+            if (terrains.contains(terrain) && level >= terrain.getMinLevel()) {
+                available.add(terrain);
             }
         }
-        return sizes;
+        return available;
     }
 
     /**
@@ -165,22 +167,22 @@ public class Archeologist {
     // --- Habilidades ---
 
     /**
-     * Añade una habilidad. Si es de terreno, añade también sus terrenos a la lista.
+     * Añade una habilidad. Si es de terreno, desbloquea también sus terrenos.
      * @param skill La habilidad.
      */
     public void addSkill(Skill skill) {
         skills.add(skill);
-        for (ETerrainShape terrain : skill.getTerrains()) {
+        for (ETerrain terrain : skill.getTerrains()) {
             addTerrain(terrain);
         }
     }
 
     /**
-     * Añade una forma de terreno si todavía no la tiene. Lo usan las habilidades de terreno
+     * Desbloquea un terreno si todavía no lo tiene. Lo usan las habilidades de terreno
      * y el truco que desbloquea todos los terrenos.
-     * @param terrain La forma de terreno.
+     * @param terrain El terreno.
      */
-    public void addTerrain(ETerrainShape terrain) {
+    public void addTerrain(ETerrain terrain) {
         if (!terrains.contains(terrain)) {
             terrains.add(terrain);
         }

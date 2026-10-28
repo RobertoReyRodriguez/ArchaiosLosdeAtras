@@ -1,25 +1,25 @@
 package skills;
 
-import excavation.ETerrainShape;
+import excavation.ETerrain;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * Habilidades que añaden formas de terreno al arqueólogo.
+ * Habilidades que desbloquean terrenos al arqueólogo.
  * No dan ningún bono: al obtenerse, el arqueólogo añade sus terrenos a su lista.
  */
 public class TerrainSkill extends Skill {
 
-	/** Las formas de terreno que añade. */
-	private final List<ETerrainShape> terrains;
+	/** Los terrenos que desbloquea. */
+	private final List<ETerrain> terrains;
 
 	/**
 	 * @param name El nombre de la habilidad.
 	 * @param description La descripción.
-	 * @param terrains Las formas de terreno que añade.
+	 * @param terrains Los terrenos que desbloquea.
 	 */
-	public TerrainSkill(String name, String description, ETerrainShape... terrains) {
+	public TerrainSkill(String name, String description, ETerrain... terrains) {
 		super(name, description);
 		this.terrains = Arrays.asList(terrains);
 	}
@@ -30,7 +30,7 @@ public class TerrainSkill extends Skill {
 	}
 
 	@Override
-	public List<ETerrainShape> getTerrains() {
+	public List<ETerrain> getTerrains() {
 		return Collections.unmodifiableList(terrains);
 	}
 }

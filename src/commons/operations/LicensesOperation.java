@@ -1,9 +1,11 @@
 package commons.operations;
 
 import commons.Archaios;
-import excavation.ETerrainShape;
+import excavation.ETerrain;
 import helpers.TextHelper;
 import helpers.UtilsHelper;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import people.Archeologist;
 
 /**
@@ -31,8 +33,12 @@ public class LicensesOperation implements IOperation {
 	public void operation() {
 		for (Archeologist archeologist : archaios.getArcheologists()) {
 			System.out.println(TextHelper.header(archeologist.toString()));
-			for (ETerrainShape terrain : archeologist.getTerrains()) {
-				System.out.println("  -" + UtilsHelper.ucfirst(terrain.toString()));
+			Set<String> shapes = new LinkedHashSet<>();
+			for (ETerrain terrain : archeologist.getTerrains()) {
+				shapes.add(terrain.getShapeName());
+			}
+			for (String shape : shapes) {
+				System.out.println("  -" + UtilsHelper.ucfirst(shape));
 			}
 		}
 	}

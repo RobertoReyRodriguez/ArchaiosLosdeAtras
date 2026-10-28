@@ -53,7 +53,7 @@ public class Excavation {
 	/** El arqueólogo que excava. */
 	private final Archeologist archeologist;
 	/** El terreno que se excava. */
-	private final Terrain terrain;
+	private final ETerrain terrain;
 
 	/** Los tesoros escondidos: el código completo de la parte, o null si la casilla está vacía. */
 	private final String[][] treasures;
@@ -77,7 +77,7 @@ public class Excavation {
 	 * @param archeologist El arqueólogo que excava.
 	 * @param terrain El terreno que se excava.
 	 */
-	public Excavation(Region region, Archeologist archeologist, Terrain terrain) {
+	public Excavation(Region region, Archeologist archeologist, ETerrain terrain) {
 		this.region = region;
 		this.archeologist = archeologist;
 		this.terrain = terrain;
@@ -107,7 +107,7 @@ public class Excavation {
 		List<ETreasureRarity> rarities = new ArrayList<>();
 
 		for (ETreasureRarity rarity : ETreasureRarity.values()) {
-			for (int i = 0; i < terrain.getSize().getMinTreasures(rarity); i++) {
+			for (int i = 0; i < terrain.getMinTreasures(rarity); i++) {
 				rarities.add(rarity);
 			}
 		}
@@ -117,7 +117,7 @@ public class Excavation {
 
 		ETreasureRarity[] extraOrder = { ETreasureRarity.RARE, ETreasureRarity.UNCOMMON, ETreasureRarity.COMMON };
 		for (ETreasureRarity rarity : extraOrder) {
-			if (rarity != ETreasureRarity.RARE || terrain.getSize().allowsRare()) {
+			if (rarity != ETreasureRarity.RARE || terrain.allowsRare()) {
 				int extra = archeologist.getExtraTreasures(region, rarity);
 				for (int i = 0; i < extra && rarities.size() < max; i++) {
 					rarities.add(rarity);
@@ -144,7 +144,7 @@ public class Excavation {
 	 */
 	private ETreasureRarity randomRarity() {
 		int uncommon = 30 + archeologist.getProbabilityBonus(ETreasureRarity.UNCOMMON);
-		int rare = terrain.getSize().allowsRare() ? 10 + archeologist.getProbabilityBonus(ETreasureRarity.RARE) : 0;
+		int rare = terrain.allowsRare() ? 10 + archeologist.getProbabilityBonus(ETreasureRarity.RARE) : 0;
 		Map<ETreasureRarity, Integer> weights = new EnumMap<>(ETreasureRarity.class);
 		weights.put(ETreasureRarity.COMMON, Math.max(0, 100 - uncommon - rare));
 		weights.put(ETreasureRarity.UNCOMMON, uncommon);
@@ -550,7 +550,7 @@ public class Excavation {
 	/**
 	 * @return El terreno que se excava.
 	 */
-	public Terrain getTerrain() {
+	public ETerrain getTerrain() {
 		return terrain;
 	}
 

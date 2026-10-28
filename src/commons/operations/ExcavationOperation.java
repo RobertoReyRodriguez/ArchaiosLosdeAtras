@@ -5,7 +5,7 @@ import java.util.List;
 import commons.Archaios;
 import commons.repositories.RegionRepository;
 import excavation.Excavation;
-import excavation.Terrain;
+import excavation.ETerrain;
 import helpers.MenuHelper;
 import helpers.TextHelper;
 import helpers.TreasureHelper;
@@ -46,7 +46,7 @@ public class ExcavationOperation implements IOperation {
 		while (region != null) {
 			Archeologist archeologist = chooseArcheologist();
 			while (archeologist != null) {
-				Terrain terrain = chooseTerrain(archeologist);
+				ETerrain terrain = chooseTerrain(archeologist);
 				if (terrain != null) {
 					Excavation excavation = new Excavation(region, archeologist, terrain);
 					collect(excavation, excavation.excavate());
@@ -80,10 +80,10 @@ public class ExcavationOperation implements IOperation {
 	 * @param archeologist El arqueólogo que va a excavar.
 	 * @return El terreno elegido entre los que puede excavar, o null si el usuario vuelve atrás.
 	 */
-	private Terrain chooseTerrain(Archeologist archeologist) {
+	private ETerrain chooseTerrain(Archeologist archeologist) {
 		System.out.println();
 		System.out.println("Terrenos:");
-		return MenuHelper.choose(Terrain.getAvailable(archeologist), Terrain::toString, "Elige un terreno: ");
+		return MenuHelper.choose(archeologist.getAvailableTerrains(), ETerrain::toString, "Elige un terreno: ");
 	}
 
 	/**
@@ -123,7 +123,7 @@ public class ExcavationOperation implements IOperation {
 
 		// Si se termina antes de tiempo no se da el extra del tamaño, para que no se pueda
 		// subir de nivel empezando y dejando excavaciones sin excavar nada.
-		int exp = points + (excavation.isAbandoned() ? 0 : excavation.getTerrain().getSize().getExtraExp());
+		int exp = points + (excavation.isAbandoned() ? 0 : excavation.getTerrain().getExtraExp());
 		archaios.addPoints(points);
 		System.out.println("Puntos conseguidos: " + points);
 		System.out.println("El arqueólogo " + archeologist.getName() + " ha conseguido " + exp + " puntos de experiencia.");

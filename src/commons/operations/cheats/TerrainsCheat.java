@@ -2,14 +2,12 @@ package commons.operations.cheats;
 
 import commons.Archaios;
 import commons.operations.IOperation;
-import excavation.ETerrainShape;
-import excavation.ETerrainSize;
-import excavation.Terrain;
+import excavation.ETerrain;
 import helpers.MenuHelper;
 import people.Archeologist;
 
 /**
- * Truco oculto 96: un arqueólogo puede excavar los 15 terrenos. Se le añaden todas las formas
+ * Truco oculto 96: un arqueólogo puede excavar los 15 terrenos. Se le desbloquean todos
  * y, si no llega al nivel de los grandes, recibe la experiencia justa para alcanzarlo
  * (eligiendo una habilidad por cada nivel, como en el juego).
  */
@@ -37,16 +35,17 @@ public class TerrainsCheat implements IOperation {
 		if (archeologist == null) {
 			return;
 		}
-		for (ETerrainShape shape : ETerrainShape.values()) {
-			archeologist.addTerrain(shape);
+		for (ETerrain terrain : ETerrain.values()) {
+			archeologist.addTerrain(terrain);
 		}
-		int needed = getExpToLevel(archeologist, ETerrainSize.LARGE.getMinLevel());
+		int largeLevel = ETerrain.LARGE_SQUARE.getMinLevel();
+		int needed = getExpToLevel(archeologist, largeLevel);
 		if (needed > 0) {
-			System.out.println("Para los terrenos grandes necesita nivel " + ETerrainSize.LARGE.getMinLevel()
+			System.out.println("Para los terrenos grandes necesita nivel " + largeLevel
 					+ ": recibe " + needed + " de experiencia.");
 			archeologist.addExp(needed);
 		}
-		System.out.println(archeologist + " puede excavar " + Terrain.getAvailable(archeologist).size() + " terrenos.");
+		System.out.println(archeologist + " puede excavar " + archeologist.getAvailableTerrains().size() + " terrenos.");
 	}
 
 	/**
