@@ -11,6 +11,7 @@ import commons.operations.cheats.HireCheat;
 import commons.operations.cheats.PointsCheat;
 import commons.operations.cheats.SkillCheat;
 import commons.operations.cheats.TerrainsCheat;
+import commons.registers.TreasureRegister;
 import commons.repositories.RegionRepository;
 import helpers.ErrorHelper;
 import helpers.InputHelper;
@@ -50,6 +51,8 @@ public class Archaios {
     private int points;
     /** La conexión con el Museo, de la librería Terra, para enviar los tesoros encontrados. */
     private Zeraf zeraf;
+    /** El registro de tesoros de la partida, donde se anota cada tesoro que se consigue. */
+    private TreasureRegister treasureRegister;
 
     /** Las opciones del menú principal, en el orden en que se muestran. */
     private List<IOperation> operations;
@@ -89,6 +92,7 @@ public class Archaios {
         archaios.uid = InputHelper.readString("Código de usuario: ");
         archaios.zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, archaios.uid, GROUP_CODE);
         archaios.gameName = InputHelper.readString("Nombre de la partida: ");
+        archaios.treasureRegister = new TreasureRegister(archaios.gameName);
         archaios.archeologists.add(new Archeologist(InputHelper.readString("Nombre del primer arqueólogo: ")));
         archaios.createOperations();
         return archaios;
@@ -197,6 +201,13 @@ public class Archaios {
      */
     public Zeraf getZeraf() {
         return zeraf;
+    }
+
+    /**
+     * @return El registro de tesoros de la partida.
+     */
+    public TreasureRegister getTreasureRegister() {
+        return treasureRegister;
     }
 
     /**
