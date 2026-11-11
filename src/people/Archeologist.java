@@ -24,6 +24,10 @@ public class Archeologist {
     public static final int MAX_LEVEL = 5;
     /** El número de habilidades entre las que se elige al subir de nivel. */
     private static final int SKILL_OPTIONS = 3;
+    /** Lo que cuesta la primera licencia de región de un arqueólogo. */
+    private static final int REGION_LICENSE_BASE_COST = 20;
+    /** Lo que se suma al coste por cada licencia de región que el arqueólogo ya tiene. */
+    private static final int REGION_LICENSE_COST_STEP = 10;
 
     /** El nombre del arqueólogo. */
     private String name;
@@ -290,6 +294,14 @@ public class Archeologist {
             throw new IllegalArgumentException(name + " ya tiene licencia para " + region.getName() + ".");
         }
         regionLicenses.add(region.getCode());
+    }
+
+    /**
+     * @return Lo que cuesta su siguiente licencia de región: 20 puntos la primera
+     * y 10 más por cada licencia que ya tenga (20, 30, 40...).
+     */
+    public int getRegionLicenseCost() {
+        return REGION_LICENSE_BASE_COST + REGION_LICENSE_COST_STEP * regionLicenses.size();
     }
 
     // --- Experiencia y niveles ---
