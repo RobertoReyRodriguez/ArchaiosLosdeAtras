@@ -12,6 +12,7 @@ import helpers.RandomHelper;
 import regions.Region;
 import skills.Skill;
 import treasures.ETreasureRarity;
+import regions.IDifficultRegion;
 
 /**
  * Los arqueólogos de la partida: su nivel, experiencia, terrenos y habilidades,
@@ -38,6 +39,8 @@ public class Archeologist {
     private List<Skill> skills = new ArrayList<>();
     /** La región en la que se especializa al llegar a nivel máximo. Null hasta entonces. */
     private Region specialization;
+    /** Los códigos de las regiones difíciles para las que ha comprado licencia. */
+    private List<String> regionLicenses = new ArrayList<>();
 
     /**
      * Crea un arqueólogo nuevo a nivel 0, sin experiencia ni habilidades.
@@ -255,6 +258,38 @@ public class Archeologist {
                 addSkill(skill);
             }
         }
+    }
+    
+    // --- Licencias de región ---
+
+    /**
+     * @return Los códigos de las regiones para las que tiene licencia. No se puede modificar.
+     */
+    public List<String> getRegionLicenses() {
+        return Collections.unmodifiableList(regionLicenses);
+    }
+
+    /**
+     * @param region La región.
+     * @return true si tiene licencia para esa región.
+     */
+    public boolean hasRegionLicense(Region region) {
+        return regionLicenses.contains(region.getCode());
+    }
+
+    /**
+     * Añade la licencia de una región difícil. Solo se guarda el código de la región.
+     * @param region La región difícil.
+     * @throws IllegalArgumentException Si la región no es difícil o ya tiene su licencia.
+     */
+    public void addRegionLicense(Region region) {
+        if (!(region instanceof IDifficultRegion)) {
+            throw new IllegalArgumentException("Solo hay licencias para regiones difíciles: " + region.getName() + ".");
+        }
+        if (hasRegionLicense(region)) {
+            throw new IllegalArgumentException(name + " ya tiene licencia para " + region.getName() + ".");
+        }
+        regionLicenses.add(region.getCode());
     }
 
     // --- Experiencia y niveles ---
