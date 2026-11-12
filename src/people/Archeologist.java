@@ -304,6 +304,34 @@ public class Archeologist {
         return REGION_LICENSE_BASE_COST + REGION_LICENSE_COST_STEP * regionLicenses.size();
     }
 
+        /**
+     * @return Las regiones en las que puede excavar: todas las básicas y las difíciles para las que
+     * tiene licencia, en el orden del repositorio.
+     */
+    public List<Region> getAvailableRegions() {
+        List<Region> result = new ArrayList<>();
+        for (Region region : RegionRepository.getAll()) {
+            if (!(region instanceof IDifficultRegion) || hasRegionLicense(region)) {
+                result.add(region);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return Las regiones difíciles para las que todavía no tiene licencia, en el orden del repositorio.
+     * Son las que puede comprar.
+     */
+    public List<Region> getUnlicensedRegions() {
+        List<Region> result = new ArrayList<>();
+        for (Region region : RegionRepository.getDifficult()) {
+            if (!hasRegionLicense(region)) {
+                result.add(region);
+            }
+        }
+        return result;
+    }
+
     // --- Experiencia y niveles ---
 
     /**
