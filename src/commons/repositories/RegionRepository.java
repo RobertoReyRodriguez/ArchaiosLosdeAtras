@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import regions.IDifficultRegion;
 import regions.Region;
 
 /**
@@ -45,5 +46,31 @@ public final class RegionRepository {
 	 */
 	public static List<Region> getAll() {
 		return new ArrayList<>(REGIONS.values());
+	}
+
+	/**
+	 * @return Las regiones básicas, las que no tienen terrenos difíciles, en el orden en que se registraron.
+	 */
+	public static List<Region> getBasic() {
+		List<Region> result = new ArrayList<>();
+		for (Region region : getAll()) {
+			if (!(region instanceof IDifficultRegion)) {
+				result.add(region);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * @return Las regiones difíciles, las de las expansiones, en el orden en que se registraron.
+	 */
+	public static List<Region> getDifficult() {
+		List<Region> result = new ArrayList<>();
+		for (Region region : getAll()) {
+			if (region instanceof IDifficultRegion) {
+				result.add(region);
+			}
+		}
+		return result;
 	}
 }

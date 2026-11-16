@@ -248,23 +248,22 @@ public class Excavation {
 
 	/**
 	 * Añade una letra a la cadena y la pasa a la siguiente llamada.
-	 * Deja de añadir en cuanto la lista tiene todas las letras que hacen falta.
+	 * Lo primero que mira es si ya están todas las letras que hacen falta: en ese caso no hace
+	 * nada más, ni en esta llamada ni en las que queden del bucle.
 	 * @param prefix La cadena construida hasta ahora.
 	 * @param length La longitud de las letras que se están generando.
 	 * @param count Cuántas letras hacen falta en total.
 	 * @param letters La lista donde se añaden.
 	 */
 	private static void addLetters(String prefix, int length, int count, List<String> letters) {
+		if (letters.size() >= count) {
+			return;
+		}
 		if (prefix.length() == length) {
-			if (letters.size() < count) {
-				letters.add(prefix);
-			}
+			letters.add(prefix);
 			return;
 		}
 		for (char letter : ALPHABET.toCharArray()) {
-			if (letters.size() >= count) {
-				return;
-			}
 			addLetters(prefix + letter, length, count, letters);
 		}
 	}

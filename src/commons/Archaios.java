@@ -11,6 +11,7 @@ import commons.operations.cheats.HireCheat;
 import commons.operations.cheats.PointsCheat;
 import commons.operations.cheats.SkillCheat;
 import commons.operations.cheats.TerrainsCheat;
+import commons.registers.TreasureRegister;
 import commons.repositories.RegionRepository;
 import helpers.ErrorHelper;
 import helpers.InputHelper;
@@ -21,9 +22,13 @@ import java.util.List;
 import java.util.Map;
 import people.Archeologist;
 import regions.Atlas;
+import regions.Egypt;
 import regions.Greece;
 import regions.Iberia;
+import regions.Petra;
+import regions.RegionLoader;
 import regions.Rome;
+import regions.Sumer;
 import skills.BaseSkills;
 import stats.Stats;
 import zeraf.ESistema;
@@ -50,6 +55,8 @@ public class Archaios {
     private int points;
     /** La conexión con el Museo, de la librería Terra, para enviar los tesoros encontrados. */
     private Zeraf zeraf;
+    /** El registro de tesoros de la partida, donde se anota cada tesoro que se consigue. */
+    private TreasureRegister treasureRegister;
 
     /** Las opciones del menú principal, en el orden en que se muestran. */
     private List<IOperation> operations;
@@ -69,9 +76,13 @@ public class Archaios {
     private static void preInit() {
         ErrorHelper.installGlobalHandler();
 
-        RegionRepository.register(new Greece());
-        RegionRepository.register(new Iberia());
-        RegionRepository.register(new Rome());
+        // Las regiones se crean vacías y sus tesoros se cargan de data/regions/<código>.json.
+        RegionRepository.register(RegionLoader.load(new Greece()));
+        RegionRepository.register(RegionLoader.load(new Iberia()));
+        RegionRepository.register(RegionLoader.load(new Rome()));
+        RegionRepository.register(RegionLoader.load(new Egypt()));
+        RegionRepository.register(RegionLoader.load(new Petra()));
+        RegionRepository.register(RegionLoader.load(new Sumer()));
 
         BaseSkills.register();
     }
@@ -89,6 +100,7 @@ public class Archaios {
         archaios.uid = InputHelper.readString("Código de usuario: ");
         archaios.zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, archaios.uid, GROUP_CODE);
         archaios.gameName = InputHelper.readString("Nombre de la partida: ");
+        archaios.treasureRegister = new TreasureRegister(archaios.gameName);
         archaios.archeologists.add(new Archeologist(InputHelper.readString("Nombre del primer arqueólogo: ")));
         archaios.createOperations();
         return archaios;
@@ -197,6 +209,13 @@ public class Archaios {
      */
     public Zeraf getZeraf() {
         return zeraf;
+    }
+
+    /**
+     * @return El registro de tesoros de la partida.
+     */
+    public TreasureRegister getTreasureRegister() {
+        return treasureRegister;
     }
 
     /**

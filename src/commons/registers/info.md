@@ -1,0 +1,1 @@
+En este paquete se encuentran los registros del sistema, los ficheros de texto donde se anota la información relevante de la partida.
