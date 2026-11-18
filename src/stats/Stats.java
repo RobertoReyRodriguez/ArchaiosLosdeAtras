@@ -102,7 +102,7 @@ public class Stats implements IOperation {
 			return;
 		}
 		for (Map.Entry<String, Integer> place : places.entrySet()) {
-			Region region = RegionRepository.get(place.getKey());
+			Region region = RegionRepository.getInstance().get(place.getKey());
 			Set<String> distinct = new HashSet<>();
 			int excavated = 0;
 			for (Map.Entry<String, Integer> treasure : treasures.entrySet()) {
@@ -144,7 +144,7 @@ public class Stats implements IOperation {
 	 * Muestra los tesoros encontrados divididos por región, por orden alfabético de código.
 	 */
 	private void showByRegion() {
-		for (Region region : RegionRepository.getAll()) {
+		for (Region region : RegionRepository.getInstance().getAll()) {
 			List<String> codes = new ArrayList<>();
 			for (String code : treasures.keySet()) {
 				if (CodeHelper.getRegion(code).equals(region.getCode())) {
@@ -162,7 +162,7 @@ public class Stats implements IOperation {
 		for (ETreasureType type : ETreasureType.values()) {
 			List<String> codes = new ArrayList<>();
 			for (String code : treasures.keySet()) {
-				if (TreasureRepository.get(code).getType() == type) {
+				if (TreasureRepository.getInstance().get(code).getType() == type) {
 					codes.add(code);
 				}
 			}
@@ -183,7 +183,7 @@ public class Stats implements IOperation {
 		System.out.println(TextHelper.header(title));
 		String previous = null;
 		for (String code : codes) {
-			Treasure treasure = TreasureRepository.get(code);
+			Treasure treasure = TreasureRepository.getInstance().get(code);
 			if (treasure.getParts() == 1) {
 				System.out.println("-" + treasure.getName() + ": " + treasures.get(code));
 			} else {
