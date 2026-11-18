@@ -6,6 +6,7 @@ import java.util.List;
 
 import commons.repositories.RegionRepository;
 import commons.repositories.SkillRepository;
+import excavation.EGround;
 import excavation.ETerrain;
 import helpers.MenuHelper;
 import helpers.RandomHelper;
@@ -210,6 +211,15 @@ public class Archeologist {
                 return false;
             }
         }
+        // Las especializaciones en un terreno son incompatibles con cualquier otra, también con las
+        // de futuras expansiones, así que se comprueba aquí en vez de marcarlas de dos en dos.
+        if (skill.isGroundSpecialization()) {
+            for (Skill learned : skills) {
+                if (learned.isGroundSpecialization()) {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
@@ -218,7 +228,7 @@ public class Archeologist {
      */
     public List<Skill> getLearnableSkills() {
         List<Skill> result = new ArrayList<>();
-        for (Skill skill : SkillRepository.getAll()) {
+        for (Skill skill : SkillRepository.getInstance().getAll()) {
             if (canLearn(skill)) {
                 result.add(skill);
             }
@@ -310,7 +320,7 @@ public class Archeologist {
      */
     public List<Region> getAvailableRegions() {
         List<Region> result = new ArrayList<>();
-        for (Region region : RegionRepository.getAll()) {
+        for (Region region : RegionRepository.getInstance().getAll()) {
             if (!(region instanceof IDifficultRegion) || hasRegionLicense(region)) {
                 result.add(region);
             }
@@ -324,7 +334,7 @@ public class Archeologist {
      */
     public List<Region> getUnlicensedRegions() {
         List<Region> result = new ArrayList<>();
-        for (Region region : RegionRepository.getDifficult()) {
+        for (Region region : RegionRepository.getInstance().getDifficult()) {
             if (!hasRegionLicense(region)) {
                 result.add(region);
             }
@@ -375,7 +385,7 @@ public class Archeologist {
      */
     private void specialize() {
         System.out.println("El arqueólogo " + name + " ha alcanzado el nivel máximo y se especializa en una región:");
-        specialization = MenuHelper.chooseRequired(RegionRepository.getAll(), Region::getName, "Región de especialización: ");
+        specialization = MenuHelper.chooseRequired(RegionRepository.getInstance().getAll(), Region::getName, "Región de especialización: ");
     }
 
     // --- Bonos: suman los de todas las habilidades y, en su región, los de la especialización ---
@@ -472,6 +482,41 @@ public class Archeologist {
             }
         }
         return false;
+    }
+
+    /**
+     * Lo que le cuesta excavar una vez un tipo de terreno. Si alguna habilidad fija ese coste,
+     * se usa el más bajo; si no, el del terreno, que si es variable sale al azar cada vez.
+     * @param symbol El símbolo del terreno en la rejilla. <code>~</code>
+     * @return El coste en acciones.
+     * @throws IllegalArgumentException Si el símbolo no es de ningún terreno.
+     */
+    public int getGroundCost(char symbol) {
+        EGround ground = EGround.fromSymbol(symbol);
+        if (ground == null) {
+            throw new IllegalArgumentException("No hay ningún terreno con el símbolo " + symbol + ".");
+        }
+        int cost = 0;
+        for (Skill skill : skills) {
+            int skillCost = skill.getGroundCost(symbol);
+            if (skillCost > 0 && (cost == 0 || skillCost < cost)) {
+                cost = skillCost;
+            }
+        }
+        return cost > 0 ? cost : ground.rollCost();
+    }
+
+    /**
+     * @param symbol El símbolo del terreno en la rejilla. <code>^</code>
+     * @return Las casillas de ese terreno que sus habilidades cambian por tierra antes de empezar la
+     * excavación. Se suman las de todas, porque los especialistas en demoliciones son compatibles entre sí.
+     */
+    public int getChangedGrounds(char symbol) {
+        int total = 0;
+        for (Skill skill : skills) {
+            total += skill.getChangedGrounds(symbol);
+        }
+        return total;
     }
 
     /**

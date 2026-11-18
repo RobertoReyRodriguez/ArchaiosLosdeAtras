@@ -13,6 +13,8 @@ import commons.operations.cheats.SkillCheat;
 import commons.operations.cheats.TerrainsCheat;
 import commons.registers.TreasureRegister;
 import commons.repositories.RegionRepository;
+import commons.repositories.SkillRepository;
+import commons.repositories.TreasureRepository;
 import helpers.ErrorHelper;
 import helpers.InputHelper;
 import helpers.MenuHelper;
@@ -22,14 +24,6 @@ import java.util.List;
 import java.util.Map;
 import people.Archeologist;
 import regions.Atlas;
-import regions.Egypt;
-import regions.Greece;
-import regions.Iberia;
-import regions.Petra;
-import regions.RegionLoader;
-import regions.Rome;
-import regions.Sumer;
-import skills.BaseSkills;
 import stats.Stats;
 import zeraf.ESistema;
 import zeraf.Zeraf;
@@ -76,15 +70,10 @@ public class Archaios {
     private static void preInit() {
         ErrorHelper.installGlobalHandler();
 
-        // Las regiones se crean vacías y sus tesoros se cargan de data/regions/<código>.json.
-        RegionRepository.register(RegionLoader.load(new Greece()));
-        RegionRepository.register(RegionLoader.load(new Iberia()));
-        RegionRepository.register(RegionLoader.load(new Rome()));
-        RegionRepository.register(RegionLoader.load(new Egypt()));
-        RegionRepository.register(RegionLoader.load(new Petra()));
-        RegionRepository.register(RegionLoader.load(new Sumer()));
-
-        BaseSkills.register();
+        // Los tesoros se registran después de las regiones, porque se cargan con ellas.
+        RegionRepository.getInstance().populate();
+        TreasureRepository.getInstance().populate();
+        SkillRepository.getInstance().populate();
     }
 
     /**
