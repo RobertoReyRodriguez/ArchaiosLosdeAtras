@@ -82,7 +82,7 @@ public class LicensesOperation implements IOperation {
 		}
 		System.out.println("Regiones:");
 		for (String code : archeologist.getRegionLicenses()) {
-			System.out.println("  -" + RegionRepository.get(code).getName());
+			System.out.println("  -" + RegionRepository.getInstance().get(code).getName());
 		}
 	}
 
