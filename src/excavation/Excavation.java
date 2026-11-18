@@ -1,7 +1,7 @@
 package excavation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +12,7 @@ import helpers.InputHelper;
 import helpers.RandomHelper;
 import helpers.UtilsHelper;
 import people.Archeologist;
+import regions.IDifficultRegion;
 import regions.Region;
 import treasures.ETreasureRarity;
 import treasures.Treasure;
@@ -19,14 +20,14 @@ import treasures.Treasure;
 /**
  * Una excavación: genera la rejilla con sus tesoros escondidos, guarda su estado
  * y lleva el proceso de excavación por turnos.
+ * Cada casilla tiene un tipo de terreno (EGround) que decide cuántas acciones cuesta excavarla
+ * y si hay que excavarla más de una vez antes de ver lo que esconde.
  */
 public class Excavation {
 
 	/** Las letras con las que se nombran las columnas. */
 	private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-	/** Casilla sin excavar. */
-	private static final char NOT_DUG = '·';
 	/** Casilla excavada (o limpiada) sin tesoro. */
 	private static final char EMPTY = 'x';
 	/** Casilla marcada por una habilidad de suposición. */
@@ -59,6 +60,10 @@ public class Excavation {
 	private final String[][] treasures;
 	/** Lo que ve el usuario de cada casilla. */
 	private final char[][] grid;
+	/** El terreno actual de cada casilla. Al excavar uno con varios niveles pasa al siguiente. */
+	private final EGround[][] ground;
+	/** Las casillas ya descubiertas: las limpiadas y las excavadas hasta el último nivel. */
+	private final boolean[][] discovered;
 	/** Las letras de las columnas, en orden. */
 	private final List<String> letters;
 	/** Los códigos de los tesoros encontrados, en el orden en que se han encontrado. */
@@ -71,22 +76,39 @@ public class Excavation {
 	private boolean abandoned;
 
 	/**
-	 * Prepara la excavación: genera los tesoros, aplica las habilidades de revelación
-	 * y calcula las acciones.
+	 * Prepara la excavación con los terrenos propios de la región: si es una región difícil, los de su
+	 * proporción; si es básica, todas las casillas son de tierra.
 	 * @param region La región donde se excava.
 	 * @param archeologist El arqueólogo que excava.
 	 * @param terrain El terreno que se excava.
 	 */
 	public Excavation(Region region, Archeologist archeologist, ETerrain terrain) {
+		this(region, archeologist, terrain, getProportions(region));
+	}
+
+	/**
+	 * Prepara la excavación: reparte los tipos de terreno, genera los tesoros, aplica las habilidades
+	 * de revelación y calcula las acciones.
+	 * @param region La región donde se excava.
+	 * @param archeologist El arqueólogo que excava.
+	 * @param terrain El terreno que se excava.
+	 * @param proportions La proporción de casillas de cada tipo de terreno. Son valores relativos,
+	 * normalmente porcentajes que suman 100. Los tipos que no aparecen no se usan.
+	 */
+	public Excavation(Region region, Archeologist archeologist, ETerrain terrain, Map<EGround, Integer> proportions) {
 		this.region = region;
 		this.archeologist = archeologist;
 		this.terrain = terrain;
 		this.treasures = new String[terrain.getRows()][terrain.getColumns()];
+		this.ground = generateGround(proportions);
 		this.grid = new char[terrain.getRows()][terrain.getColumns()];
-		for (char[] row : grid) {
-			Arrays.fill(row, NOT_DUG);
+		this.discovered = new boolean[terrain.getRows()][terrain.getColumns()];
+		for (int row = 0; row < terrain.getRows(); row++) {
+			for (int col = 0; col < terrain.getColumns(); col++) {
+				grid[row][col] = ground[row][col].getSymbol();
+			}
 		}
-		this.letters = Excavation.generateLetters(terrain.getColumns());
+		this.letters = generateLetters(terrain.getColumns());
 
 		generateTreasures();
 		applyCleaning();
@@ -95,6 +117,73 @@ public class Excavation {
 	}
 
 	//  Generación
+
+	/**
+	 * @param region La región donde se excava.
+	 * @return La proporción de cada tipo de terreno de la región: la suya si es difícil y todo tierra si no.
+	 */
+	private static Map<EGround, Integer> getProportions(Region region) {
+		if (region instanceof IDifficultRegion) {
+			return ((IDifficultRegion) region).getGroundProportions();
+		}
+		return Map.of(EGround.EARTH, 100);
+	}
+
+	/**
+	 * Reparte los tipos de terreno por la rejilla. El reparto es exacto: a cada tipo le tocan tantas
+	 * casillas como le corresponden por su proporción, y las que sobran por el redondeo se dan,
+	 * de una en una, a los tipos con más resto (al azar si empatan). Dónde va cada una es aleatorio.
+	 * @param proportions La proporción de cada tipo de terreno.
+	 * @return El terreno de cada casilla.
+	 */
+	private EGround[][] generateGround(Map<EGround, Integer> proportions) {
+		int cells = terrain.getCells();
+		int total = 0;
+		for (int proportion : proportions.values()) {
+			total += Math.max(0, proportion);
+		}
+		if (total <= 0) {
+			throw new IllegalArgumentException("Las proporciones de terreno deben sumar más de 0.");
+		}
+
+		Map<EGround, Integer> counts = new EnumMap<>(EGround.class);
+		Map<EGround, Integer> remainders = new EnumMap<>(EGround.class);
+		int assigned = 0;
+		for (EGround type : EGround.values()) {
+			int proportion = Math.max(0, proportions.getOrDefault(type, 0));
+			if (proportion > 0) {
+				counts.put(type, cells * proportion / total);
+				remainders.put(type, cells * proportion % total);
+				assigned += counts.get(type);
+			}
+		}
+		while (assigned < cells) {
+			int best = Collections.max(remainders.values());
+			List<EGround> candidates = new ArrayList<>();
+			for (Map.Entry<EGround, Integer> entry : remainders.entrySet()) {
+				if (entry.getValue() == best) {
+					candidates.add(entry.getKey());
+				}
+			}
+			EGround chosen = RandomHelper.randomElement(candidates);
+			counts.merge(chosen, 1, Integer::sum);
+			remainders.put(chosen, -1);
+			assigned++;
+		}
+
+		List<EGround> types = new ArrayList<>();
+		for (Map.Entry<EGround, Integer> entry : counts.entrySet()) {
+			for (int i = 0; i < entry.getValue(); i++) {
+				types.add(entry.getKey());
+			}
+		}
+		Collections.shuffle(types);
+		EGround[][] result = new EGround[terrain.getRows()][terrain.getColumns()];
+		for (int i = 0; i < cells; i++) {
+			result[i / terrain.getColumns()][i % terrain.getColumns()] = types.get(i);
+		}
+		return result;
+	}
 
 	/**
 	 * Decide la rareza de cada tesoro en el orden del enunciado y los coloca en casillas al azar.
@@ -159,6 +248,7 @@ public class Excavation {
 		int amount = Math.min(archeologist.getCleanedCells(), getMaxRevealed() - revealed);
 		for (int[] cell : RandomHelper.randomElements(getCells(false), amount)) {
 			grid[cell[0]][cell[1]] = EMPTY;
+			discovered[cell[0]][cell[1]] = true;
 			revealed++;
 		}
 	}
@@ -177,7 +267,7 @@ public class Excavation {
 				if (revealed >= getMaxRevealed()) {
 					return;
 				}
-				if (grid[cell[0]][cell[1]] == NOT_DUG) {
+				if (!discovered[cell[0]][cell[1]] && grid[cell[0]][cell[1]] != GUESS) {
 					grid[cell[0]][cell[1]] = GUESS;
 					revealed++;
 				}
@@ -248,22 +338,23 @@ public class Excavation {
 
 	/**
 	 * Añade una letra a la cadena y la pasa a la siguiente llamada.
-	 * Lo primero que mira es si ya están todas las letras que hacen falta: en ese caso no hace
-	 * nada más, ni en esta llamada ni en las que queden del bucle.
+	 * Deja de añadir en cuanto la lista tiene todas las letras que hacen falta.
 	 * @param prefix La cadena construida hasta ahora.
 	 * @param length La longitud de las letras que se están generando.
 	 * @param count Cuántas letras hacen falta en total.
 	 * @param letters La lista donde se añaden.
 	 */
 	private static void addLetters(String prefix, int length, int count, List<String> letters) {
-		if (letters.size() >= count) {
-			return;
-		}
 		if (prefix.length() == length) {
-			letters.add(prefix);
+			if (letters.size() < count) {
+				letters.add(prefix);
+			}
 			return;
 		}
 		for (char letter : ALPHABET.toCharArray()) {
+			if (letters.size() >= count) {
+				return;
+			}
 			addLetters(prefix + letter, length, count, letters);
 		}
 	}
@@ -311,21 +402,31 @@ public class Excavation {
 	}
 
 	/**
-	 * Excava una casilla: se cambia lo que ve el usuario por lo que hay escondido.
-	 * Si ya estaba descubierta, no gasta acción.
+	 * Excava una casilla, gastando lo que cueste su terreno. Si el terreno tiene siguiente nivel,
+	 * la casilla pasa a ese terreno y hay que excavarla otra vez; si no, se cambia lo que ve
+	 * el usuario por lo que hay escondido. Si ya estaba descubierta, no gasta acción.
+	 * Si quedan menos acciones que el coste, la excavación se hace igualmente y se quedan a 0.
 	 * @param row La fila.
 	 * @param col La columna.
 	 */
 	private void dig(int row, int col) {
 		String position = (row + 1) + letters.get(col);
-		if (grid[row][col] != NOT_DUG && grid[row][col] != GUESS) {
+		if (discovered[row][col]) {
 			System.out.println(position + ": ya está descubierta.");
 			return;
 		}
-		actions--;
+		EGround current = ground[row][col];
+		actions = Math.max(0, actions - current.rollCost());
+		if (current.hasNext()) {
+			ground[row][col] = current.getNext();
+			grid[row][col] = ground[row][col].getSymbol();
+			System.out.println(position + ": investigas " + current.getName() + ", debajo hay " + ground[row][col].getName() + ".");
+			return;
+		}
+		discovered[row][col] = true;
 		grid[row][col] = getHidden(row, col);
 		if (treasures[row][col] == null) {
-			System.out.println(position + ": nada.");
+			System.out.println(position + ": investigas " + current.getName() + ", debajo no encuentras nada");
 		} else {
 			found.add(treasures[row][col]);
 			System.out.println(position + ": ¡tesoro " + getRarity(row, col) + "!");
@@ -478,7 +579,7 @@ public class Excavation {
 				if (treasures[row][col] != null) {
 					ETreasureRarity rarity = getRarity(row, col);
 					total.merge(rarity, 1, Integer::sum);
-					if (grid[row][col] != NOT_DUG && grid[row][col] != GUESS) {
+					if (discovered[row][col]) {
 						foundByRarity.merge(rarity, 1, Integer::sum);
 					}
 				}
