@@ -12,6 +12,7 @@ import helpers.RandomHelper;
 import regions.Region;
 import skills.Skill;
 import treasures.ETreasureRarity;
+import regions.IDifficultRegion;
 
 /**
  * Los arqueólogos de la partida: su nivel, experiencia, terrenos y habilidades,
@@ -23,6 +24,10 @@ public class Archeologist {
     public static final int MAX_LEVEL = 5;
     /** El número de habilidades entre las que se elige al subir de nivel. */
     private static final int SKILL_OPTIONS = 3;
+    /** Lo que cuesta la primera licencia de región de un arqueólogo. */
+    private static final int REGION_LICENSE_BASE_COST = 20;
+    /** Lo que se suma al coste por cada licencia de región que el arqueólogo ya tiene. */
+    private static final int REGION_LICENSE_COST_STEP = 10;
 
     /** El nombre del arqueólogo. */
     private String name;
@@ -38,6 +43,8 @@ public class Archeologist {
     private List<Skill> skills = new ArrayList<>();
     /** La región en la que se especializa al llegar a nivel máximo. Null hasta entonces. */
     private Region specialization;
+    /** Los códigos de las regiones difíciles para las que ha comprado licencia. */
+    private List<String> regionLicenses = new ArrayList<>();
 
     /**
      * Crea un arqueólogo nuevo a nivel 0, sin experiencia ni habilidades.
@@ -255,6 +262,74 @@ public class Archeologist {
                 addSkill(skill);
             }
         }
+    }
+    
+    // --- Licencias de región ---
+
+    /**
+     * @return Los códigos de las regiones para las que tiene licencia. No se puede modificar.
+     */
+    public List<String> getRegionLicenses() {
+        return Collections.unmodifiableList(regionLicenses);
+    }
+
+    /**
+     * @param region La región.
+     * @return true si tiene licencia para esa región.
+     */
+    public boolean hasRegionLicense(Region region) {
+        return regionLicenses.contains(region.getCode());
+    }
+
+    /**
+     * Añade la licencia de una región difícil. Solo se guarda el código de la región.
+     * @param region La región difícil.
+     * @throws IllegalArgumentException Si la región no es difícil o ya tiene su licencia.
+     */
+    public void addRegionLicense(Region region) {
+        if (!(region instanceof IDifficultRegion)) {
+            throw new IllegalArgumentException("Solo hay licencias para regiones difíciles: " + region.getName() + ".");
+        }
+        if (hasRegionLicense(region)) {
+            throw new IllegalArgumentException(name + " ya tiene licencia para " + region.getName() + ".");
+        }
+        regionLicenses.add(region.getCode());
+    }
+
+    /**
+     * @return Lo que cuesta su siguiente licencia de región: 20 puntos la primera
+     * y 10 más por cada licencia que ya tenga (20, 30, 40...).
+     */
+    public int getRegionLicenseCost() {
+        return REGION_LICENSE_BASE_COST + REGION_LICENSE_COST_STEP * regionLicenses.size();
+    }
+
+        /**
+     * @return Las regiones en las que puede excavar: todas las básicas y las difíciles para las que
+     * tiene licencia, en el orden del repositorio.
+     */
+    public List<Region> getAvailableRegions() {
+        List<Region> result = new ArrayList<>();
+        for (Region region : RegionRepository.getAll()) {
+            if (!(region instanceof IDifficultRegion) || hasRegionLicense(region)) {
+                result.add(region);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return Las regiones difíciles para las que todavía no tiene licencia, en el orden del repositorio.
+     * Son las que puede comprar.
+     */
+    public List<Region> getUnlicensedRegions() {
+        List<Region> result = new ArrayList<>();
+        for (Region region : RegionRepository.getDifficult()) {
+            if (!hasRegionLicense(region)) {
+                result.add(region);
+            }
+        }
+        return result;
     }
 
     // --- Experiencia y niveles ---

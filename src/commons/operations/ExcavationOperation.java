@@ -37,43 +37,46 @@ public class ExcavationOperation implements IOperation {
 		return "Excavar";
 	}
 
+	
 	/**
-	 * Pide región, arqueólogo y terreno, en ese orden. La opción 0 de cada lista vuelve a la anterior.
+	 * Pide arqueólogo, región y terreno, en ese orden. La opción 0 de cada lista vuelve a la anterior.
 	 */
 	@Override
 	public void operation() {
-		Region region = chooseRegion();
-		while (region != null) {
-			Archeologist archeologist = chooseArcheologist();
-			while (archeologist != null) {
+		Archeologist archeologist = chooseArcheologist();
+		while (archeologist != null) {
+			Region region = chooseRegion(archeologist);
+			while (region != null) {
 				ETerrain terrain = chooseTerrain(archeologist);
 				if (terrain != null) {
 					Excavation excavation = new Excavation(region, archeologist, terrain);
 					collect(excavation, excavation.excavate());
 					return;
 				}
-				archeologist = chooseArcheologist();
+				region = chooseRegion(archeologist);
 			}
-			region = chooseRegion();
+			archeologist = chooseArcheologist();
 		}
 	}
 
 	/**
-	 * @return La región elegida, o null si el usuario vuelve al menú.
-	 */
-	private Region chooseRegion() {
-		System.out.println();
-		System.out.println("Regiones:");
-		return MenuHelper.choose(RegionRepository.getAll(), Region::getName, "Elige una región: ", "Volver al menú");
-	}
-
-	/**
-	 * @return El arqueólogo elegido, mostrado con su nombre y nivel, o null si el usuario vuelve atrás.
+	 * @return El arqueólogo elegido, mostrado con su nombre y nivel, o null si el usuario vuelve al menú.
 	 */
 	private Archeologist chooseArcheologist() {
 		System.out.println();
 		System.out.println("Arqueólogos:");
-		return MenuHelper.choose(archaios.getArcheologists(), Archeologist::toString, "Elige un arqueólogo: ");
+		return MenuHelper.choose(archaios.getArcheologists(), Archeologist::toString, "Elige un arqueólogo: ", "Volver al menú");
+	}
+
+	/**
+	 * @param archeologist El arqueólogo que va a excavar.
+	 * @return La región elegida entre las básicas y las difíciles de las que tiene licencia,
+	 * o null si el usuario vuelve atrás.
+	 */
+	private Region chooseRegion(Archeologist archeologist) {
+		System.out.println();
+		System.out.println("Regiones:");
+		return MenuHelper.choose(archeologist.getAvailableRegions(), Region::getName, "Elige una región: ");
 	}
 
 	/**
