@@ -171,6 +171,15 @@
         "type": "EST"
     },
     {
+        "code": "SUM_EST_007",
+        "name": "Estela de Tiamat",
+        "description": "Diosa primordial, monstruo del caos que crea a los dioses.",
+        "rarity": "C",
+        "parts": 96,
+        "points": 1,
+        "type": "EST"
+    },
+    {
         "code": "SUM_EST_008",
         "name": "Estela de Enki",
         "description": "El se\u00f1or de la tierra, dios que cre\u00f3 a los hombres y les ense\u00f1\u00f3 los oficios y artes.",
