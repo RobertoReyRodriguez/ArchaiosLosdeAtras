@@ -42,7 +42,7 @@ public class Atlas implements IOperation {
 	 */
 	private Region chooseRegion() {
 		System.out.println("Regiones:");
-		return MenuHelper.choose(RegionRepository.getAll(), Region::getName, "Elige una región: ", "Volver al menú");
+		return MenuHelper.choose(RegionRepository.getInstance().getAll(), Region::getName, "Elige una región: ", "Volver al menú");
 	}
 
 	/**

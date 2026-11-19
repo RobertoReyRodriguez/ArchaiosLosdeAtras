@@ -111,6 +111,7 @@ public class Excavation {
 		this.letters = generateLetters(terrain.getColumns());
 
 		generateTreasures();
+		applyGroundChanges();
 		applyCleaning();
 		applyGuesses();
 		this.actions = calculateActions();
@@ -242,6 +243,31 @@ public class Excavation {
 	}
 
 	/**
+	 * Habilidades que cambian terreno (demoliciones): por cada tipo de terreno difícil, cambia por tierra
+	 * tantas casillas al azar de ese tipo como indiquen las habilidades del arqueólogo, o todas si hay menos.
+	 * Se aplica antes de la limpieza y el escaneo.
+	 */
+	private void applyGroundChanges() {
+		for (EGround type : EGround.values()) {
+			int amount = type == EGround.EARTH ? 0 : archeologist.getChangedGrounds(type.getSymbol());
+			if (amount > 0) {
+				List<int[]> cells = new ArrayList<>();
+				for (int row = 0; row < terrain.getRows(); row++) {
+					for (int col = 0; col < terrain.getColumns(); col++) {
+						if (ground[row][col] == type) {
+							cells.add(new int[] { row, col });
+						}
+					}
+				}
+				for (int[] cell : RandomHelper.randomElements(cells, amount)) {
+					ground[cell[0]][cell[1]] = EGround.EARTH;
+					grid[cell[0]][cell[1]] = EGround.EARTH.getSymbol();
+				}
+			}
+		}
+	}
+
+	/**
 	 * Habilidades de limpieza: marca como vacías casillas sin tesoro al azar.
 	 */
 	private void applyCleaning() {
@@ -338,23 +364,22 @@ public class Excavation {
 
 	/**
 	 * Añade una letra a la cadena y la pasa a la siguiente llamada.
-	 * Deja de añadir en cuanto la lista tiene todas las letras que hacen falta.
+	 * Lo primero que mira es si ya están todas las letras que hacen falta: en ese caso no hace
+	 * nada más, ni en esta llamada ni en las que queden del bucle.
 	 * @param prefix La cadena construida hasta ahora.
 	 * @param length La longitud de las letras que se están generando.
 	 * @param count Cuántas letras hacen falta en total.
 	 * @param letters La lista donde se añaden.
 	 */
 	private static void addLetters(String prefix, int length, int count, List<String> letters) {
+		if (letters.size() >= count) {
+			return;
+		}
 		if (prefix.length() == length) {
-			if (letters.size() < count) {
-				letters.add(prefix);
-			}
+			letters.add(prefix);
 			return;
 		}
 		for (char letter : ALPHABET.toCharArray()) {
-			if (letters.size() >= count) {
-				return;
-			}
 			addLetters(prefix + letter, length, count, letters);
 		}
 	}
@@ -416,7 +441,7 @@ public class Excavation {
 			return;
 		}
 		EGround current = ground[row][col];
-		actions = Math.max(0, actions - current.rollCost());
+		actions = Math.max(0, actions - archeologist.getGroundCost(current.getSymbol()));
 		if (current.hasNext()) {
 			ground[row][col] = current.getNext();
 			grid[row][col] = ground[row][col].getSymbol();

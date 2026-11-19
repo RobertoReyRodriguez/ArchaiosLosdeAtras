@@ -143,6 +143,32 @@ public abstract class Skill {
 	}
 
 	/**
+	 * El coste fijo que pone la habilidad a excavar un tipo de terreno.
+	 * @param symbol El símbolo del terreno en la rejilla. <code>~</code>
+	 * @return El coste de excavar ese terreno con la habilidad, o 0 si no cambia su coste.
+	 */
+	public int getGroundCost(char symbol) {
+		return 0;
+	}
+
+	/**
+	 * Las casillas de un tipo de terreno que la habilidad cambia por tierra antes de empezar la excavación.
+	 * @param symbol El símbolo del terreno en la rejilla. <code>^</code>
+	 * @return Cuántas casillas de ese terreno se cambian, o 0 si no cambia ninguna.
+	 */
+	public int getChangedGrounds(char symbol) {
+		return 0;
+	}
+
+	/**
+	 * @return true si es una especialización en un tipo de terreno, es decir, si fija su coste.
+	 * Son incompatibles entre sí.
+	 */
+	public boolean isGroundSpecialization() {
+		return false;
+	}
+
+	/**
 	 * Los terrenos que desbloquea la habilidad al obtenerse. No es un bono:
 	 * el arqueólogo los añade a su lista de terrenos cuando aprende la habilidad.
 	 * @return Los terrenos a desbloquear. Vacía si no desbloquea ninguno.

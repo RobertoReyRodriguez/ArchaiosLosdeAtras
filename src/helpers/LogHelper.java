@@ -27,12 +27,8 @@ public final class LogHelper {
 	}
 
 	/**
-	 * Anota un error en el registro de errores (<code>log/errors.log</code>): la descripción de la
+	 * Anota un error en el registro de errores  la descripción de la
 	 * excepción con la fecha y hora, y a continuación su pila de trazabilidad, incluidas las causas.
-	 * <pre>
-	 * [aaaa-mm-dd hh:mm:ss] java.lang.IllegalStateException: Descripción de la excepción
-	 * 	at paquete.Clase.metodo(Clase.java:12)
-	 * </pre>
 	 * @param error El error producido.
 	 * @throws UncheckedIOException Si no se puede escribir en el fichero.
 	 */
