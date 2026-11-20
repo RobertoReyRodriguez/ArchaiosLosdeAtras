@@ -1,5 +1,6 @@
 package regions;
 
+import com.google.gson.annotations.JsonAdapter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +14,7 @@ import treasures.Treasure;
  * Base de las regiones en las que se realizan las excavaciones.
  * Cada región guarda sus propios tesoros, que son únicos de ella.
  */
+@JsonAdapter(value = RegionAdapter.class, nullSafe = false)
 public abstract class Region {
 
 	/** El nombre de la región que se muestra al usuario. */

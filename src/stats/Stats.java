@@ -1,11 +1,13 @@
 package stats;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import commons.operations.IOperation;
@@ -33,9 +35,11 @@ public class Stats implements IOperation {
 	private static final String PART_INDENT = "    ";
 
 	/** Veces que se ha encontrado cada tesoro, por código completo y en orden alfabético. */
-	private Map<String, Integer> treasures = new TreeMap<>();
+	@SerializedName("Tesoros")
+	private SortedMap<String, Integer> treasures = new TreeMap<>();
 	/** Veces que se ha excavado en cada región, por código de región. */
-	private Map<String, Integer> places = new TreeMap<>();
+	@SerializedName("Lugares")
+	private SortedMap<String, Integer> places = new TreeMap<>();
 
 	/**
 	 * Apunta que se ha encontrado un tesoro.

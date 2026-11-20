@@ -103,7 +103,7 @@ public final class SaveHelper {
 	 * Construye el fichero de una partida a partir de su nombre, cambiando por
 	 * guiones bajos los caracteres que los sistemas de ficheros no permiten.
 	 * @param gameName El nombre de la partida.
-	 * @return El fichero de la partida dentro de <code>saves</code>.
+	 * @return El fichero de la partida dentro de saves.
 	 */
 	private static File getFile(String gameName) {
 		return new File(DIRECTORY, gameName.replaceAll(INVALID_CHARACTERS, "_") + EXTENSION);

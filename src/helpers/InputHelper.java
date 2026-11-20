@@ -100,7 +100,7 @@ public final class InputHelper {
 	 * Lee una confirmación sí/no, repitiendo la pregunta hasta obtener una respuesta válida.
 	 * Acepta s, si, sí, n y no, sin distinguir mayúsculas.
 	 * @param prompt El texto que se muestra antes de leer, sin el indicador (s/n).
-	 * @return <code>true</code> si la respuesta es afirmativa, <code>false</code> si es negativa.
+	 * @return true si la respuesta es afirmativa, false si es negativa.
 	 */
 	public static boolean readYesNo(String prompt) {
 		String fullPrompt = prompt + " (s/n): ";

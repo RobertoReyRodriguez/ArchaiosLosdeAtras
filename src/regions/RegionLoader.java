@@ -52,7 +52,6 @@ public final class RegionLoader {
 
 	/**
 	 * Crea un tesoro a partir de su objeto JSON.
-	 * <code>{"code": "GRC_MON_001", "name": "Calco griego", "description": "...", "rarity": "C", "parts": 1, "points": 1, "type": "MON"}</code>
 	 * @param json El objeto JSON del tesoro.
 	 * @return El tesoro.
 	 */
@@ -68,10 +67,8 @@ public final class RegionLoader {
 	}
 
 	/**
-	 * Busca la rareza por su código. No se usa <code>ETreasureRarity.getByCode</code> porque compara
-	 * los textos con <code>==</code>, y un texto leído de un fichero nunca es el mismo objeto que el
-	 * del enumerado, así que siempre devolvería null.
-	 * @param code El código de la rareza. <code>C</code>
+	 * Busca la rareza por su código
+	 * @param code El código de la rareza.
 	 * @return La rareza.
 	 * @throws IllegalArgumentException Si no hay ninguna rareza con ese código.
 	 */
@@ -85,8 +82,8 @@ public final class RegionLoader {
 	}
 
 	/**
-	 * Busca el tipo por su código, por el mismo motivo que {@link #getRarity(String)}.
-	 * @param code El código del tipo. <code>MON</code>
+	 * Busca el tipo por su código.
+	 * @param code El código del tipo. 
 	 * @return El tipo.
 	 * @throws IllegalArgumentException Si no hay ningún tipo con ese código.
 	 */
