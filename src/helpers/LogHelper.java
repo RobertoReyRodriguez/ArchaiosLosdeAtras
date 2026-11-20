@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Escritura de ficheros de registro de texto, una línea por entrada con su marca de tiempo.
- * <code>[aaaa-mm-dd hh:mm:ss] Mensaje</code>
+ * [aaaa-mm-dd hh:mm:ss] Mensaje
  */
 public final class LogHelper {
 

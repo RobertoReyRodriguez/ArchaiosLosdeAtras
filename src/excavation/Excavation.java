@@ -131,9 +131,7 @@ public class Excavation {
 	}
 
 	/**
-	 * Reparte los tipos de terreno por la rejilla. El reparto es exacto: a cada tipo le tocan tantas
-	 * casillas como le corresponden por su proporción, y las que sobran por el redondeo se dan,
-	 * de una en una, a los tipos con más resto (al azar si empatan). Dónde va cada una es aleatorio.
+	 * Reparte los tipos de terreno por la rejilla. 
 	 * @param proportions La proporción de cada tipo de terreno.
 	 * @return El terreno de cada casilla.
 	 */
@@ -229,7 +227,7 @@ public class Excavation {
 
 	/**
 	 * Elige una rareza al azar: 60% común, 30% infrecuente y 10% raro, más los bonos del arqueólogo
-	 * a infrecuentes y raros, que se restan de los comunes. En terrenos pequeños nunca sale raro.
+	 * a infrecuentes y raros, que se restan de los comunes.
 	 * @return La rareza elegida.
 	 */
 	private ETreasureRarity randomRarity() {
@@ -245,7 +243,6 @@ public class Excavation {
 	/**
 	 * Habilidades que cambian terreno (demoliciones): por cada tipo de terreno difícil, cambia por tierra
 	 * tantas casillas al azar de ese tipo como indiquen las habilidades del arqueólogo, o todas si hay menos.
-	 * Se aplica antes de la limpieza y el escaneo.
 	 */
 	private void applyGroundChanges() {
 		for (EGround type : EGround.values()) {
@@ -282,8 +279,8 @@ public class Excavation {
 	/**
 	 * Habilidades de suposición: por cada una, marca con '?' tres casillas al azar,
 	 * una con tesoro y dos sin él. Se aplican tras la limpieza: si una de las elegidas
-	 * ya está limpiada, se queda como está y no se elige otra. Cada suposición elige
-	 * entre las casillas que no tienen ya un '?', para no repetir las de otra.
+	 * ya está limpiada, se queda como está y no se elige otra. 
+	
 	 */
 	private void applyGuesses() {
 		for (int i = 0; i < archeologist.getGuesses(); i++) {
@@ -302,8 +299,7 @@ public class Excavation {
 	}
 
 	/**
-	 * Quita de una lista las casillas que ya tienen un '?'. Las limpiadas se quedan,
-	 * porque si una suposición elige una de ellas no se escoge otra.
+	 * Quita de una lista las casillas que ya tienen un '?'. 
 	 * @param cells Las posiciones de las casillas.
 	 * @return La misma lista, sin las casillas con '?'.
 	 */

@@ -6,12 +6,10 @@ import java.io.UncheckedIOException;
 import java.nio.file.Path;
 
 /**
- * El registro de tesoros de una partida: un fichero de texto en <code>log/register</code> con el
+ * El registro de tesoros de una partida: un fichero de texto con el
  * nombre de la partida, donde se anota una línea cada vez que se consigue un tesoro.
- * <pre>
- * [aaaa-mm-dd hh:mm:ss] Inicio de la partida
+ * [aaaa-mm-dd hh:mm:ss] Inicio de la partida.
  * [aaaa-mm-dd hh:mm:ss] RRR_TTT_NNN_PPPP
- * </pre>
  */
 public class TreasureRegister {
 
@@ -20,7 +18,7 @@ public class TreasureRegister {
 	/** La extensión de los ficheros de registro. */
 	private static final String EXTENSION = ".log";
 	/** El mensaje que se escribe al crear la partida. */
-	private static final String START_MESSAGE = "Inicio de la partida";
+	private static final String START_MESSAGE = "Inicio de la partida.";
 	/** Los caracteres que no se pueden usar en el nombre de un fichero. */
 	private static final String INVALID_CHARACTERS = "[\\\\/:*?\"<>|\\p{Cntrl}]";
 
@@ -34,13 +32,25 @@ public class TreasureRegister {
 	 * @param gameName El nombre de la partida.
 	 */
 	public TreasureRegister(String gameName) {
+		this(gameName, true);
+	}
+
+	/**
+	 * Crea el registro de una partida. Si es nueva, anota su inicio; si es una partida
+	 * cargada, sigue escribiendo en su fichero sin volver a anotarlo.
+	 * @param gameName El nombre de la partida.
+	 * @param newGame true si la partida se acaba de crear; false si se ha cargado.
+	 */
+	public TreasureRegister(String gameName, boolean newGame) {
 		this.file = DIRECTORY.resolve(toFileName(gameName));
-		write(START_MESSAGE);
+		if (newGame) {
+			write(START_MESSAGE);
+		}
 	}
 
 	/**
 	 * Anota un tesoro conseguido.
-	 * @param code El código completo del tesoro encontrado. <code>RRR_TTT_NNN_PPPP</code>
+	 * @param code El código completo del tesoro encontrado. 
 	 */
 	public void registerTreasure(String code) {
 		write(code);
@@ -57,7 +67,7 @@ public class TreasureRegister {
 	 * Construye el nombre del fichero a partir del nombre de la partida, cambiando por
 	 * guiones bajos los caracteres que los sistemas de ficheros no permiten.
 	 * @param gameName El nombre de la partida.
-	 * @return El nombre del fichero con extensión <code>.log</code>.
+	 * @return El nombre del fichero 
 	 */
 	static String toFileName(String gameName) {
 		return gameName.replaceAll(INVALID_CHARACTERS, "_") + EXTENSION;

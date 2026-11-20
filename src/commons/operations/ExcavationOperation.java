@@ -3,7 +3,6 @@ package commons.operations;
 import java.util.List;
 
 import commons.Archaios;
-import commons.repositories.RegionRepository;
 import excavation.Excavation;
 import excavation.ETerrain;
 import helpers.MenuHelper;
@@ -91,7 +90,7 @@ public class ExcavationOperation implements IOperation {
 
 	/**
 	 * Recoge lo que devuelve la excavación: muestra los tesoros encontrados, los registra
-	 * en las estadísticas, los envía al Museo y reparte los puntos y la experiencia.
+	 * en las estadísticas y en el registro de tesoros, los envía al Museo, reparte los puntos y la experiencia y guarda la partida.
 	 * @param excavation La excavación terminada.
 	 * @param codes Los códigos completos de los tesoros encontrados.
 	 */
@@ -112,6 +111,7 @@ public class ExcavationOperation implements IOperation {
 			}
 			System.out.println(TreasureHelper.getFoundDetail(treasure, codes.get(i)));
 			archaios.getStats().registerTreasure(codes.get(i));
+			archaios.getTreasureRegister().registerTreasure(codes.get(i));
 			points += treasure.getPoints();
 		}
 
@@ -130,6 +130,10 @@ public class ExcavationOperation implements IOperation {
 		archaios.addPoints(points);
 		System.out.println("Puntos conseguidos: " + points);
 		System.out.println("El arqueólogo " + archeologist.getName() + " ha conseguido " + exp + " puntos de experiencia.");
+		// Se guarda dos veces: con los tesoros y los puntos, y otra vez tras subir de nivel.
+		// Si se cierra el programa al elegir habilidad, se pierde la experiencia pero no los tesoros.
+		archaios.save();
 		archeologist.addExp(exp);
+		archaios.save();
 	}
 }

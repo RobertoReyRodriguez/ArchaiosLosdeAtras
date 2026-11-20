@@ -1,5 +1,6 @@
 package excavation;
 
+import com.google.gson.annotations.SerializedName;
 import helpers.UtilsHelper;
 import treasures.ETreasureRarity;
 
@@ -8,25 +9,41 @@ import treasures.ETreasureRarity;
  * salen las medidas de la rejilla, el nivel de arqueólogo necesario para excavarlo, los tesoros
  * mínimos de cada rareza que tiene siempre y la experiencia extra que da.
  * El arqueólogo empieza con los terrenos cuadrados y desbloquea el resto con habilidades de terreno.
+ * En el guardado cada terreno se escribe con el nombre que usa el Archaios del profesor (S_SQUARE...).
  */
 public enum ETerrain {
 	// tamaño, forma, filas, columnas, nivel mínimo, comunes, infrecuentes, raros, permite raros, exp extra
+	@SerializedName("S_ROW")
 	SMALL_ROW("pequeño", "fila", 5, 3, 0, 1, 0, 0, false, 2),
+	@SerializedName("S_HORIZONTAL")
 	SMALL_HORIZONTAL("pequeño", "horizontal", 10, 2, 0, 1, 0, 0, false, 2),
+	@SerializedName("S_COLUMN")
 	SMALL_COLUMN("pequeño", "columna", 3, 5, 0, 1, 0, 0, false, 2),
+	@SerializedName("S_VERTICAL")
 	SMALL_VERTICAL("pequeño", "vertical", 2, 10, 0, 1, 0, 0, false, 2),
+	@SerializedName("S_SQUARE")
 	SMALL_SQUARE("pequeño", "cuadrado", 5, 5, 0, 1, 0, 0, false, 2),
 
+	@SerializedName("M_ROW")
 	MEDIUM_ROW("mediano", "fila", 20, 5, 2, 3, 1, 0, true, 5),
+	@SerializedName("M_HORIZONTAL")
 	MEDIUM_HORIZONTAL("mediano", "horizontal", 30, 3, 2, 3, 1, 0, true, 5),
+	@SerializedName("M_COLUMN")
 	MEDIUM_COLUMN("mediano", "columna", 5, 20, 2, 3, 1, 0, true, 5),
+	@SerializedName("M_VERTICAL")
 	MEDIUM_VERTICAL("mediano", "vertical", 3, 30, 2, 3, 1, 0, true, 5),
+	@SerializedName("M_SQUARE")
 	MEDIUM_SQUARE("mediano", "cuadrado", 10, 10, 2, 3, 1, 0, true, 5),
 
+	@SerializedName("B_ROW")
 	LARGE_ROW("grande", "fila", 20, 10, 4, 5, 3, 1, true, 10),
+	@SerializedName("B_HORIZONTAL")
 	LARGE_HORIZONTAL("grande", "horizontal", 40, 5, 4, 5, 3, 1, true, 10),
+	@SerializedName("B_COLUMN")
 	LARGE_COLUMN("grande", "columna", 10, 20, 4, 5, 3, 1, true, 10),
+	@SerializedName("B_VERTICAL")
 	LARGE_VERTICAL("grande", "vertical", 5, 40, 4, 5, 3, 1, true, 10),
+	@SerializedName("B_SQUARE")
 	LARGE_SQUARE("grande", "cuadrado", 15, 15, 4, 5, 3, 1, true, 10);
 
 	/** El nombre del tamaño. */

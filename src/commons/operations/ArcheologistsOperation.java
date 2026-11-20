@@ -138,6 +138,7 @@ public class ArcheologistsOperation implements IOperation {
 		archeologist.setName(InputHelper.readString("Nombre del arqueólogo: "));
 		archaios.getArcheologists().add(archeologist);
 		System.out.println(archeologist.getName() + " se ha unido al equipo.");
+		archaios.save();
 	}
 
 	// --- Licenciar ---
@@ -162,6 +163,7 @@ public class ArcheologistsOperation implements IOperation {
 				archaios.getArcheologists().remove(archeologist);
 				archaios.addPoints(points);
 				System.out.println(archeologist.getName() + " ha dejado el equipo. Ahora tienes " + archaios.getPoints() + " puntos.");
+				archaios.save();
 				return;
 			}
 			System.out.println();

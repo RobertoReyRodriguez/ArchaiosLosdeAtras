@@ -55,8 +55,7 @@ public final class ErrorHelper {
 
 	/**
 	 * Registra el error en <code>log/errors.log</code>: la descripción con la fecha y hora, y debajo su pila de trazabilidad.
-	 * Si no se puede escribir en el registro, solo se avisa por la salida de errores: volver a llamar a
-	 * {@link #handle(Throwable)} intentaría registrar ese fallo, que volvería a fallar, y así sin parar.
+	 * Si no se puede escribir en el registro, solo se avisa por la salida de errores.
 	 * @param error El error producido.
 	 */
 	private static void register(Throwable error) {

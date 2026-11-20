@@ -1,5 +1,6 @@
 package skills;
 
+import com.google.gson.annotations.JsonAdapter;
 import excavation.ETerrain;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +11,9 @@ import treasures.ETreasureRarity;
  * Base de todas las habilidades de los arqueólogos.
  * Tiene un método para cada tipo de bonus posible, que por defecto no da nada;
  * cada tipo de habilidad sobrescribe los suyos. .
+ * En el guardado se escribe solo su nombre, con {@link SkillAdapter}.
  */
+@JsonAdapter(SkillAdapter.class)
 public abstract class Skill {
 
 	/** El nombre de la habilidad. Es único y sirve de código. */
