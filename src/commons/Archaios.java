@@ -1,5 +1,6 @@
 package commons;
 
+import com.google.gson.annotations.SerializedName;
 import commons.operations.ArcheologistsOperation;
 import commons.operations.CatalogOperation;
 import commons.operations.ExcavationOperation;
@@ -11,20 +12,21 @@ import commons.operations.cheats.HireCheat;
 import commons.operations.cheats.PointsCheat;
 import commons.operations.cheats.SkillCheat;
 import commons.operations.cheats.TerrainsCheat;
+import commons.registers.TreasureRegister;
 import commons.repositories.RegionRepository;
+import commons.repositories.SkillRepository;
+import commons.repositories.TreasureRepository;
 import helpers.ErrorHelper;
 import helpers.InputHelper;
 import helpers.MenuHelper;
+import helpers.SaveHelper;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import people.Archeologist;
 import regions.Atlas;
-import regions.Greece;
-import regions.Iberia;
-import regions.Rome;
-import skills.BaseSkills;
 import stats.Stats;
 import zeraf.ESistema;
 import zeraf.Zeraf;
@@ -32,6 +34,8 @@ import zeraf.ZerafFactory;
 
 /**
  * Clase principal del sistema: contiene el main, el menú y los datos de la partida.
+ * Es el objeto que se guarda en JSON. Los atributos <code>transient</code> no se guardan:
+ * se vuelven a crear al cargar la partida.
  */
 public class Archaios {
 
@@ -39,22 +43,29 @@ public class Archaios {
     public static final String GROUP_CODE = "2DAM2627";
 
     /** El código identificativo y único del usuario. */
+    @SerializedName("UID")
     private String uid;
     /** El nombre de la partida. */
+    @SerializedName("Partida")
     private String gameName;
     /** Los arqueólogos de la partida. */
+    @SerializedName("Arqueólogos")
     private List<Archeologist> archeologists = new ArrayList<>();
     /** Las estadísticas de la partida. */
+    @SerializedName("Estadísticas")
     private Stats stats = new Stats();
     /** Los puntos disponibles para contratar arqueólogos. */
+    @SerializedName("Puntos")
     private int points;
     /** La conexión con el Museo, de la librería Terra, para enviar los tesoros encontrados. */
-    private Zeraf zeraf;
+    private transient Zeraf zeraf;
+    /** El registro de tesoros de la partida, donde se anota cada tesoro que se consigue. */
+    private transient TreasureRegister treasureRegister;
 
     /** Las opciones del menú principal, en el orden en que se muestran. */
-    private List<IOperation> operations;
+    private transient List<IOperation> operations;
     /** Las opciones ocultas del menú principal (trucos para probar el sistema), por su número. */
-    private Map<Integer, IOperation> cheats;
+    private transient Map<Integer, IOperation> cheats;
 
     public static void main(String[] args) {
         preInit();
@@ -69,29 +80,82 @@ public class Archaios {
     private static void preInit() {
         ErrorHelper.installGlobalHandler();
 
-        RegionRepository.register(new Greece());
-        RegionRepository.register(new Iberia());
-        RegionRepository.register(new Rome());
-
-        BaseSkills.register();
+        RegionRepository.getInstance().populate();
+        TreasureRepository.getInstance().populate();
+        SkillRepository.getInstance().populate();
     }
 
     /**
-     * Inicializa el sistema creando una partida nueva.
-     * La carga de partidas guardadas es parte del sistema de guardado (segunda entrega).
-     * @return La partida creada.
+     * Inicializa el sistema. Si hay partidas guardadas, pregunta si se quiere cargar alguna
+     * o empezar una nueva. Si no hay, o se elige nueva, o no se puede cargar la elegida, crea una nueva.
+     * @return La partida cargada o creada.
      */
     private static Archaios init() {
         System.out.println("=== ARCHAIOS ===");
+
+        Archaios archaios = null;
+        List<File> saves = SaveHelper.getSaves();
+        if (!saves.isEmpty()) {
+            System.out.println("Partidas guardadas:");
+            File save = MenuHelper.choose(saves, SaveHelper::getName, "Elige una partida: ", "Nueva partida");
+            if (save != null) {
+                archaios = load(save);
+            }
+        }
+        if (archaios == null) {
+            archaios = create();
+        }
+        archaios.createOperations();
+        return archaios;
+    }
+
+    /**
+     * Crea una partida nueva pidiendo el código del usuario, el nombre de la partida y el del
+     * primer arqueólogo, y la guarda. El nombre no puede ser el de una partida ya guardada.
+     * @return La partida creada.
+     */
+    private static Archaios create() {
         System.out.println("Nueva partida");
 
         Archaios archaios = new Archaios();
         archaios.uid = InputHelper.readString("Código de usuario: ");
         archaios.zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, archaios.uid, GROUP_CODE);
         archaios.gameName = InputHelper.readString("Nombre de la partida: ");
+        while (SaveHelper.exists(archaios.gameName)) {
+            System.out.println("Ya hay una partida guardada con ese nombre.");
+            archaios.gameName = InputHelper.readString("Nombre de la partida: ");
+        }
+        archaios.treasureRegister = new TreasureRegister(archaios.gameName);
         archaios.archeologists.add(new Archeologist(InputHelper.readString("Nombre del primer arqueólogo: ")));
-        archaios.createOperations();
+        archaios.save();
         return archaios;
+    }
+
+    /**
+     * Carga una partida guardada y vuelve a crear lo que no se guarda: la conexión con el Museo
+     * y el registro de tesoros, que sigue escribiendo en el fichero de la partida.
+     * @param file El fichero de la partida.
+     * @return La partida cargada, o null si no se ha podido cargar.
+     */
+    private static Archaios load(File file) {
+        Archaios archaios = SaveHelper.load(file);
+        if (archaios == null) {
+            return null;
+        }
+        archaios.zeraf = ZerafFactory.createZeraf(ESistema.MUSEO, archaios.uid, GROUP_CODE);
+        archaios.treasureRegister = new TreasureRegister(archaios.gameName, false);
+        for (Archeologist archeologist : archaios.archeologists) {
+            archeologist.restoreTerrains();
+        }
+        System.out.println("Partida " + archaios.gameName + " cargada.");
+        return archaios;
+    }
+
+    /**
+     * Guarda la partida en su fichero JSON 
+     */
+    public void save() {
+        SaveHelper.save(this);
     }
 
     /**
@@ -119,7 +183,6 @@ public class Archaios {
     /**
      * Muestra el menú principal y ejecuta la opción elegida hasta que el usuario sale.
      * Si se cierra la entrada (Ctrl+Z en Windows, Ctrl+D en Linux), sale del programa
-     * sin mostrar un error, porque ya no se puede leer nada más.
      */
     private void run() {
         try {
@@ -197,6 +260,13 @@ public class Archaios {
      */
     public Zeraf getZeraf() {
         return zeraf;
+    }
+
+    /**
+     * @return El registro de tesoros de la partida.
+     */
+    public TreasureRegister getTreasureRegister() {
+        return treasureRegister;
     }
 
     /**

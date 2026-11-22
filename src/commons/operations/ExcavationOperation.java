@@ -3,9 +3,8 @@ package commons.operations;
 import java.util.List;
 
 import commons.Archaios;
-import commons.repositories.RegionRepository;
 import excavation.Excavation;
-import excavation.Terrain;
+import excavation.ETerrain;
 import helpers.MenuHelper;
 import helpers.TextHelper;
 import helpers.TreasureHelper;
@@ -37,58 +36,61 @@ public class ExcavationOperation implements IOperation {
 		return "Excavar";
 	}
 
+	
 	/**
-	 * Pide región, arqueólogo y terreno, en ese orden. La opción 0 de cada lista vuelve a la anterior.
+	 * Pide arqueólogo, región y terreno, en ese orden. La opción 0 de cada lista vuelve a la anterior.
 	 */
 	@Override
 	public void operation() {
-		Region region = chooseRegion();
-		while (region != null) {
-			Archeologist archeologist = chooseArcheologist();
-			while (archeologist != null) {
-				Terrain terrain = chooseTerrain(archeologist);
+		Archeologist archeologist = chooseArcheologist();
+		while (archeologist != null) {
+			Region region = chooseRegion(archeologist);
+			while (region != null) {
+				ETerrain terrain = chooseTerrain(archeologist);
 				if (terrain != null) {
 					Excavation excavation = new Excavation(region, archeologist, terrain);
 					collect(excavation, excavation.excavate());
 					return;
 				}
-				archeologist = chooseArcheologist();
+				region = chooseRegion(archeologist);
 			}
-			region = chooseRegion();
+			archeologist = chooseArcheologist();
 		}
 	}
 
 	/**
-	 * @return La región elegida, o null si el usuario vuelve al menú.
-	 */
-	private Region chooseRegion() {
-		System.out.println();
-		System.out.println("Regiones:");
-		return MenuHelper.choose(RegionRepository.getAll(), Region::getName, "Elige una región: ", "Volver al menú");
-	}
-
-	/**
-	 * @return El arqueólogo elegido, mostrado con su nombre y nivel, o null si el usuario vuelve atrás.
+	 * @return El arqueólogo elegido, mostrado con su nombre y nivel, o null si el usuario vuelve al menú.
 	 */
 	private Archeologist chooseArcheologist() {
 		System.out.println();
 		System.out.println("Arqueólogos:");
-		return MenuHelper.choose(archaios.getArcheologists(), Archeologist::toString, "Elige un arqueólogo: ");
+		return MenuHelper.choose(archaios.getArcheologists(), Archeologist::toString, "Elige un arqueólogo: ", "Volver al menú");
+	}
+
+	/**
+	 * @param archeologist El arqueólogo que va a excavar.
+	 * @return La región elegida entre las básicas y las difíciles de las que tiene licencia,
+	 * o null si el usuario vuelve atrás.
+	 */
+	private Region chooseRegion(Archeologist archeologist) {
+		System.out.println();
+		System.out.println("Regiones:");
+		return MenuHelper.choose(archeologist.getAvailableRegions(), Region::getName, "Elige una región: ");
 	}
 
 	/**
 	 * @param archeologist El arqueólogo que va a excavar.
 	 * @return El terreno elegido entre los que puede excavar, o null si el usuario vuelve atrás.
 	 */
-	private Terrain chooseTerrain(Archeologist archeologist) {
+	private ETerrain chooseTerrain(Archeologist archeologist) {
 		System.out.println();
 		System.out.println("Terrenos:");
-		return MenuHelper.choose(Terrain.getAvailable(archeologist), Terrain::toString, "Elige un terreno: ");
+		return MenuHelper.choose(archeologist.getAvailableTerrains(), ETerrain::toString, "Elige un terreno: ");
 	}
 
 	/**
 	 * Recoge lo que devuelve la excavación: muestra los tesoros encontrados, los registra
-	 * en las estadísticas, los envía al Museo y reparte los puntos y la experiencia.
+	 * en las estadísticas y en el registro de tesoros, los envía al Museo, reparte los puntos y la experiencia y guarda la partida.
 	 * @param excavation La excavación terminada.
 	 * @param codes Los códigos completos de los tesoros encontrados.
 	 */
@@ -109,6 +111,7 @@ public class ExcavationOperation implements IOperation {
 			}
 			System.out.println(TreasureHelper.getFoundDetail(treasure, codes.get(i)));
 			archaios.getStats().registerTreasure(codes.get(i));
+			archaios.getTreasureRegister().registerTreasure(codes.get(i));
 			points += treasure.getPoints();
 		}
 
@@ -123,10 +126,14 @@ public class ExcavationOperation implements IOperation {
 
 		// Si se termina antes de tiempo no se da el extra del tamaño, para que no se pueda
 		// subir de nivel empezando y dejando excavaciones sin excavar nada.
-		int exp = points + (excavation.isAbandoned() ? 0 : excavation.getTerrain().getSize().getExtraExp());
+		int exp = points + (excavation.isAbandoned() ? 0 : excavation.getTerrain().getExtraExp());
 		archaios.addPoints(points);
 		System.out.println("Puntos conseguidos: " + points);
 		System.out.println("El arqueólogo " + archeologist.getName() + " ha conseguido " + exp + " puntos de experiencia.");
+		// Se guarda dos veces: con los tesoros y los puntos, y otra vez tras subir de nivel.
+		// Si se cierra el programa al elegir habilidad, se pierde la experiencia pero no los tesoros.
+		archaios.save();
 		archeologist.addExp(exp);
+		archaios.save();
 	}
 }

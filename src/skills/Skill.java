@@ -1,6 +1,7 @@
 package skills;
 
-import excavation.ETerrainShape;
+import com.google.gson.annotations.JsonAdapter;
+import excavation.ETerrain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +11,9 @@ import treasures.ETreasureRarity;
  * Base de todas las habilidades de los arqueólogos.
  * Tiene un método para cada tipo de bonus posible, que por defecto no da nada;
  * cada tipo de habilidad sobrescribe los suyos. .
+ * En el guardado se escribe solo su nombre, con {@link SkillAdapter}.
  */
+@JsonAdapter(SkillAdapter.class)
 public abstract class Skill {
 
 	/** El nombre de la habilidad. Es único y sirve de código. */
@@ -143,11 +146,37 @@ public abstract class Skill {
 	}
 
 	/**
-	 * Las formas de terreno que añade la habilidad al obtenerse. No es un bono:
-	 * el arqueólogo las añade a su lista de terrenos cuando aprende la habilidad.
-	 * @return Las formas de terreno a añadir. Vacía si no añade ninguna.
+	 * El coste fijo que pone la habilidad a excavar un tipo de terreno.
+	 * @param symbol El símbolo del terreno en la rejilla. <code>~</code>
+	 * @return El coste de excavar ese terreno con la habilidad, o 0 si no cambia su coste.
 	 */
-	public List<ETerrainShape> getTerrains() {
+	public int getGroundCost(char symbol) {
+		return 0;
+	}
+
+	/**
+	 * Las casillas de un tipo de terreno que la habilidad cambia por tierra antes de empezar la excavación.
+	 * @param symbol El símbolo del terreno en la rejilla. <code>^</code>
+	 * @return Cuántas casillas de ese terreno se cambian, o 0 si no cambia ninguna.
+	 */
+	public int getChangedGrounds(char symbol) {
+		return 0;
+	}
+
+	/**
+	 * @return true si es una especialización en un tipo de terreno, es decir, si fija su coste.
+	 * Son incompatibles entre sí.
+	 */
+	public boolean isGroundSpecialization() {
+		return false;
+	}
+
+	/**
+	 * Los terrenos que desbloquea la habilidad al obtenerse. No es un bono:
+	 * el arqueólogo los añade a su lista de terrenos cuando aprende la habilidad.
+	 * @return Los terrenos a desbloquear. Vacía si no desbloquea ninguno.
+	 */
+	public List<ETerrain> getTerrains() {
 		return Collections.emptyList();
 	}
 

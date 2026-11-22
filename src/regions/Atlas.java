@@ -42,11 +42,12 @@ public class Atlas implements IOperation {
 	 */
 	private Region chooseRegion() {
 		System.out.println("Regiones:");
-		return MenuHelper.choose(RegionRepository.getAll(), Region::getName, "Elige una región: ", "Volver al menú");
+		return MenuHelper.choose(RegionRepository.getInstance().getAll(), Region::getName, "Elige una región: ", "Volver al menú");
 	}
 
 	/**
 	 * Muestra todos los tesoros de una región, con el nombre alineado en una columna.
+	 * Si es una región difícil, indica también a qué expansión pertenece.
 	 * @param region La región.
 	 */
 	private void showRegion(Region region) {
@@ -60,6 +61,10 @@ public class Atlas implements IOperation {
 		for (Treasure treasure : treasures) {
 			System.out.println("  " + TextHelper.padRight(treasure.getName(), width) + "   "
 					+ TreasureHelper.getTypeAndRarity(treasure));
+		}
+		if (region instanceof IDifficultRegion) {
+			System.out.println(TextHelper.header("Difícil"));
+			System.out.println("Región difícil. " + ((IDifficultRegion) region).getExpansion());
 		}
 	}
 

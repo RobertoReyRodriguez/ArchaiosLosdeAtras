@@ -1,11 +1,13 @@
 package stats;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import commons.operations.IOperation;
@@ -33,9 +35,11 @@ public class Stats implements IOperation {
 	private static final String PART_INDENT = "    ";
 
 	/** Veces que se ha encontrado cada tesoro, por código completo y en orden alfabético. */
-	private Map<String, Integer> treasures = new TreeMap<>();
+	@SerializedName("Tesoros")
+	private SortedMap<String, Integer> treasures = new TreeMap<>();
 	/** Veces que se ha excavado en cada región, por código de región. */
-	private Map<String, Integer> places = new TreeMap<>();
+	@SerializedName("Lugares")
+	private SortedMap<String, Integer> places = new TreeMap<>();
 
 	/**
 	 * Apunta que se ha encontrado un tesoro.
@@ -102,7 +106,7 @@ public class Stats implements IOperation {
 			return;
 		}
 		for (Map.Entry<String, Integer> place : places.entrySet()) {
-			Region region = RegionRepository.get(place.getKey());
+			Region region = RegionRepository.getInstance().get(place.getKey());
 			Set<String> distinct = new HashSet<>();
 			int excavated = 0;
 			for (Map.Entry<String, Integer> treasure : treasures.entrySet()) {
@@ -144,7 +148,7 @@ public class Stats implements IOperation {
 	 * Muestra los tesoros encontrados divididos por región, por orden alfabético de código.
 	 */
 	private void showByRegion() {
-		for (Region region : RegionRepository.getAll()) {
+		for (Region region : RegionRepository.getInstance().getAll()) {
 			List<String> codes = new ArrayList<>();
 			for (String code : treasures.keySet()) {
 				if (CodeHelper.getRegion(code).equals(region.getCode())) {
@@ -162,7 +166,7 @@ public class Stats implements IOperation {
 		for (ETreasureType type : ETreasureType.values()) {
 			List<String> codes = new ArrayList<>();
 			for (String code : treasures.keySet()) {
-				if (TreasureRepository.get(code).getType() == type) {
+				if (TreasureRepository.getInstance().get(code).getType() == type) {
 					codes.add(code);
 				}
 			}
@@ -183,7 +187,7 @@ public class Stats implements IOperation {
 		System.out.println(TextHelper.header(title));
 		String previous = null;
 		for (String code : codes) {
-			Treasure treasure = TreasureRepository.get(code);
+			Treasure treasure = TreasureRepository.getInstance().get(code);
 			if (treasure.getParts() == 1) {
 				System.out.println("-" + treasure.getName() + ": " + treasures.get(code));
 			} else {

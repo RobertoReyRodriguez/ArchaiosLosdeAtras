@@ -37,7 +37,7 @@ public class SkillsOperation implements IOperation {
 	 */
 	private ESkillType chooseType() {
 		System.out.println("Tipos de habilidad:");
-		return MenuHelper.choose(SkillRepository.getTypes(), t -> UtilsHelper.ucfirst(t.toString()),
+		return MenuHelper.choose(SkillRepository.getInstance().getTypes(), t -> UtilsHelper.ucfirst(t.toString()),
 				"Elige un tipo: ", "Volver al menú");
 	}
 
@@ -51,7 +51,7 @@ public class SkillsOperation implements IOperation {
 		while (true) {
 			System.out.println();
 			System.out.println("Habilidades de " + type + ":");
-			Skill skill = MenuHelper.choose(SkillRepository.getAll(type), Skill::getName, "Elige una habilidad: ");
+			Skill skill = MenuHelper.choose(SkillRepository.getInstance().getAll(type), Skill::getName, "Elige una habilidad: ");
 			if (skill == null) {
 				System.out.println();
 				return false;
